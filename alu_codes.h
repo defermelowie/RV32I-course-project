@@ -1,8 +1,8 @@
-// ALU operations encoding
-parameter ALU_AND = 4'b0000;
-parameter ALU_SUB = 4'b0001;
-parameter ALU_XOR = 4'b0010;
-parameter ALU_OR = 4'b0101;
-parameter ALU_AND = 4'b0110;
-parameter ALU_LSR = 4'b0111;
-parameter ALU_LSL = 4'b1000;
+// -- ALU operations encoding ---------------------------------
+parameter ALU_ADD = 4'b0000;    // add
+parameter ALU_SUB = 4'b0001;    // subtract
+parameter ALU_XOR = 4'b0010;    // xor
+parameter ALU_OR  = 4'b0101;    // or
+parameter ALU_AND = 4'b0110;    // and
+parameter ALU_LSR = 4'b0111;    // logical shift right
+parameter ALU_LSL = 4'b1000;    // logical shift left

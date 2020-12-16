@@ -1,4 +1,4 @@
-// Instruction opcode groups
+// -- Instruction opcode groups -------------------------------
 parameter lui_gr = 7'b0110111; // Lui
 parameter aui_gr = 7'b0010111; // Auipc
 parameter jal_gr = 7'b1101111; // Jal
