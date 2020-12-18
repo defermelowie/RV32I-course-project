@@ -123,10 +123,10 @@ always @(*) begin
         //slti_inst: TODO
         //sltiu_inst: TODO
         xori_inst: begin alu_op <= ALU_XOR; alu_src <= 1; reg_write_enable <= 1; end
-        srli_inst: begin ALU_op <= ALU_LSR; ALU_imm <= 1; reg_write_enable <= 1; end
-        srai_inst: begin ALU_op <= ALU_ASR; ALU_imm <= 1; reg_write_enable <= 1; end
-        ori_inst: begin ALU_op <= ALU_OR; ALU_imm <= 1; reg_write_enable <= 1; end
-        andi_inst: begin ALU_op <= ALU_AND; ALU_imm <= 1; reg_write_enable <= 1; end
+        srli_inst: begin alu_op <= ALU_LSR; alu_src <= 1; reg_write_enable <= 1; end
+        srai_inst: begin alu_op <= ALU_ASR; alu_src <= 1; reg_write_enable <= 1; end
+        ori_inst: begin alu_op <= ALU_OR; alu_src <= 1; reg_write_enable <= 1; end
+        andi_inst: begin alu_op <= ALU_AND; alu_src <= 1; reg_write_enable <= 1; end
         // Arithmetic & logic R-type instructions
         add_inst: begin alu_op <= ALU_ADD; reg_write_enable <= 1; end
         sub_inst: begin alu_op <= ALU_SUB; reg_write_enable <= 1; end
