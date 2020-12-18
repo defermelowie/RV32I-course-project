@@ -8,12 +8,16 @@
         end
 
 module {DUT module name}_tb;
+// Include necessary headers
 
 // IO
 reg {DUT inputs};
 wire {DUT outputs};
 
-// Include necessary headers
+// Device under test
+{DUT module name} DUT (
+
+);
 
 // Create clock if needed
 // always #5 clock = ~clock;
