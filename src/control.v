@@ -89,7 +89,7 @@ always @(*) begin
     ill_instr <= 0;
     // Set signal if needed for instruction
     case (1'b1)
-        lui_inst: begin alu_op <= ALU_PASS_1; alu_src <= 1; end
+        lui_inst: begin alu_op <= ALU_PASS_1; alu_src <= 1; reg_write_enable <= 1; end
         //auipc_inst: TODO
         //jal_inst: TODO
         //jalr_inst: TODO
@@ -120,7 +120,7 @@ always @(*) begin
         //sltiu_inst: TODO
         xori_inst: begin alu_op <= ALU_XOR; alu_src <= 1; reg_write_enable <= 1; end
         srli_inst: begin ALU_op <= ALU_LSR; ALU_imm <= 1; reg_write_enable <= 1; end
-        //srai_inst: TODO
+        srai_inst: begin ALU_op <= ALU_ASR; ALU_imm <= 1; reg_write_enable <= 1; end
         ori_inst: begin ALU_op <= ALU_OR; ALU_imm <= 1; reg_write_enable <= 1; end
         andi_inst: begin ALU_op <= ALU_AND; ALU_imm <= 1; reg_write_enable <= 1; end
         // Arithmetic & logic R-type instructions
