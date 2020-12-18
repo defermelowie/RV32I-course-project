@@ -1,4 +1,4 @@
-module ALU (
+module alu (
     in_0,
     in_1,
     operation,
@@ -6,14 +6,17 @@ module ALU (
     zero
 );
 
-`include "RISCV.h" // Contains XLEN definition
-`include "alu_codes.h" // Contains alu operation codes
+// -- Include definitions -------------------------------------
+`include "riscv.h"      // Contains XLEN definition
+`include "alu_codes.h"  // Contains alu operation codes
 
+// -- Module IO -----------------------------------------------
 input [XLEN-1:0] in_0, in_1;
 input [3:0] operation;
 output reg [XLEN-1:0] out;
 output reg zero;
 
+// -- Calculate output based on operation code ----------------
 always @(*) begin
     case (operation)
         ALU_ADD: out <= in_0 + in_1;

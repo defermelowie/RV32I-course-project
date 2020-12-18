@@ -3,11 +3,14 @@ module immediate_generator (
     immediate_out
 );
 
-`include "RISCV.h" // Contains XLEN definition
+// -- Include definitions -------------------------------------
+`include "riscv.h" // Contains XLEN definition
 
+// -- Module IO -----------------------------------------------
 input [31:0] instruction;
 output reg [XLEN-1:0] immediate_out;
 
+// -- Internal signals ----------------------------------------
 reg [2:0] instruction_format;
 
 // -- Instruction format coding -------------------------------

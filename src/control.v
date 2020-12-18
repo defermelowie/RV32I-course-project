@@ -9,13 +9,15 @@ module control (
     ill_instr           // output -> high if instruction is not recognized
 );
 
+// -- Include definitions ---------------------------------
+`include "alu_codes.h"  // Contains risc-v opcodes
+`include "opcodes.h"    // Contains alu operation codes
+
 // -- Module IO -------------------------------------------
 input [31:0] instruction;
 output reg branch_enable, mem_write_enable, reg_write_enable, mem_to_reg, alu_src, ill_instr;
 output reg [3:0] alu_op;
-// -- Include definitions ---------------------------------
-`include "ALU_codes.h"
-`include "opcodes.h"
+
 // -- Extract opcode --------------------------------------
 wire [6:0] opcode;
 assign opcode = instruction[6:0];
@@ -25,6 +27,7 @@ assign funct3 = instruction[14:12];
 // -- Extract funct7 ---------------------------------------
 wire [6:0] funct7;
 assign funct7 = instruction[31:25];
+
 // -- Determine instruction -------------------------------
 // Lui
 wire lui_inst = (opcode == lui_gr);
@@ -77,6 +80,7 @@ wire or_inst = (opcode == reg_gr) && (funct3 == 3'b110) && (funct7 == 7'b0000000
 wire and_inst = (opcode == reg_gr) && (funct3 == 3'b111) && (funct7 == 7'b0000000);
 // Fence instructions group NOT IMPLEMENTED
 // Csr instructions group NOT IMPLEMENTED
+
 // -- Set control signals ---------------------------------
 always @(*) begin
     // Reset all signals
