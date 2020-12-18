@@ -1,3 +1,5 @@
+# Testbench template
+
 ```verilog
 `timescale 1ns/10ps
 
