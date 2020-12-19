@@ -29,7 +29,7 @@ alu DUT (
 
 // Code for testing
 initial begin
-    #5 $display("START TEST: add");
+    $display("START TEST: add");
     operation <= ALU_ADD;
     in_0 <= 5;
     in_1 <= 7;
@@ -37,49 +37,89 @@ initial begin
     in_0 <= -2;
     in_1 <= 7;
     #1 `assert(out, 5)
-    $display("FINISHED TEST: add");
+    $display("TEST DONE: add");
 
-    #5 $display("START TEST: sub");
+    $display("START TEST: sub");
     operation <= ALU_SUB;
-    // TODO
-    $display("FINISHED TEST: sub");
+    in_0 <= 5;
+    in_1 <= 7;
+    #1 `assert(out, -2)
+    in_0 <= 12;
+    in_1 <= 4;
+    #1 `assert(out, 8)
+    in_0 <= -2;
+    in_1 <= -7;
+    #1 `assert(out, 5)
+    in_0 <= 15;
+    in_1 <= 0;
+    #1 `assert(out, 15)
+    $display("TEST DONE: sub");
 
-    #5 $display("START TEST: xor");
+    $display("START TEST: xor");
     operation <= ALU_XOR;
-    // TODO
-    $display("FINISHED TEST: xor");
+    in_0 <= 5;
+    in_1 <= 6;
+    #1 `assert(out, 3)
+    in_0 <= 10;
+    in_1 <= 3;
+    #1 `assert(out, 9)
+    $display("TEST DONE: xor");
 
-    #5 $display("START TEST: or:");
+    $display("START TEST: or:");
     operation <= ALU_OR;
-    // TODO
-    $display("FINISHED TEST: or:");
+    in_0 <= 10;
+    in_1 <= 3;
+    #1 `assert(out, 11)
+    in_0 <= 11;
+    in_1 <= -11;
+    #1 `assert(out, -1)
+    $display("TEST DONE: or:");
 
-    #5 $display("START TEST: and");
+    $display("START TEST: and");
     operation <= ALU_AND;
-    // TODO
-    $display("FINISHED TEST: and");
+    in_0 <= 10;
+    in_1 <= 3;
+    #1 `assert(out, 2)
+    $display("TEST DONE: and");
 
-    #5 $display("START TEST: lsr");
+    $display("START TEST: lsr");
     operation <= ALU_LSR;
-    // TODO
-    $display("FINISHED TEST: lsr");
+    in_0 <= 10;
+    in_1 <= 3;
+    #1 `assert(out, 1)
+    in_0 <= -1;
+    in_1 <= 3;
+    #1 `assert(out, 'h1FFFFFFF)
+    $display("TEST DONE: lsr");
 
-    #5 $display("START TEST: lsl");
+    $display("START TEST: lsl");
     operation <= ALU_LSL;
-    // TODO
-    $display("FINISHED TEST: lsl");
+    in_0 <= 5;
+    in_1 <= 3;
+    #1 `assert(out, 40)
+    $display("TEST DONE: lsl");
 
-    #5 $display("START TEST: pass input 1");
+    $display("START TEST: pass input 1");
     operation <= ALU_PASS_1;
-    // TODO
-    $display("FINISHED TEST: pass input 1");
+    in_0 <= 8;
+    in_1 <= 14;
+    #1 `assert(out, 14)
+    $display("TEST DONE: pass input 1");
 
-    #5 $display("START TEST: asr");
+    $display("START TEST: asr");
     operation <= ALU_ASR;
-    // TODO
-    $display("FINISHED TEST: asr");
+    in_0 <= 10;
+    in_1 <= 3;
+    #1 `assert(out, 1)
+    in_0 <= -10;
+    in_1 <= 3;
+    #1 `assert(out, -2)
+    in_0 <= -1;
+    in_1 <= 37;
+    #1 `assert(out, 'hFFFFFFFF)
+    $display("TEST DONE: asr");
 
-    #5 $display("ALL TEST FINISHED");
+    $display("ALL TEST FINISHED");
     $stop();
 end
 

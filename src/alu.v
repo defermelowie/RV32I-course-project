@@ -11,9 +11,9 @@ module alu (
 `include "alu_codes.h"  // Contains alu operation codes
 
 // -- Module IO -----------------------------------------------
-input [XLEN-1:0] in_0, in_1;
+input signed [XLEN-1:0] in_0, in_1; // Must be signed in order for right shift arithmetic (>>>) to work
 input [3:0] operation;
-output reg [XLEN-1:0] out;
+output reg signed [XLEN-1:0] out;   // Must be signed in order for right shift arithmetic (>>>) to work
 output reg zero;
 
 // -- Calculate output based on operation code ----------------
