@@ -6,6 +6,7 @@ module control (
     mem_to_reg,         // output -> high routes data memory output to register input
     alu_op,             // output -> ALU operating mode (definitions in alu_codes.h)
     alu_src,            // output -> high: alu input = immediate, low: alu input = register file
+    alu_inv_zero,       // output -> high inverts alu zero output
     ill_instr           // output -> high if instruction is not recognized
 );
 
@@ -15,7 +16,7 @@ module control (
 
 // -- Module IO -------------------------------------------
 input [31:0] instruction;
-output reg branch_enable, mem_write_enable, reg_write_enable, mem_to_reg, alu_src, ill_instr;
+output reg branch_enable, mem_write_enable, reg_write_enable, mem_to_reg, alu_src, alu_inv_zero, ill_instr;
 output reg [3:0] alu_op;
 
 // -- Extract opcode --------------------------------------
@@ -78,8 +79,8 @@ wire srl_inst = (opcode == reg_gr) && (funct3 == 3'b101) && (funct7 == 7'b000000
 wire sra_inst = (opcode == reg_gr) && (funct3 == 3'b101) && (funct7 == 7'b0100000);
 wire or_inst = (opcode == reg_gr) && (funct3 == 3'b110) && (funct7 == 7'b0000000);
 wire and_inst = (opcode == reg_gr) && (funct3 == 3'b111) && (funct7 == 7'b0000000);
-// Fence instructions group NOT IMPLEMENTED
-// Csr instructions group NOT IMPLEMENTED
+// Fence instructions group -> NOT IMPLEMENTED
+// Csr instructions group -> NOT IMPLEMENTED
 
 // -- Set control signals ---------------------------------
 always @(*) begin
@@ -89,7 +90,8 @@ always @(*) begin
     reg_write_enable <= 0;
     mem_to_reg <= 0;
     alu_src <= 0;
-	alu_op <= 4'b0;
+    alu_inv_zero <= 0;
+	alu_op <= 'b0;
     ill_instr <= 0;
     // Set signal if needed for instruction
     case (1'b1)
@@ -99,10 +101,10 @@ always @(*) begin
         //jalr_inst: TODO
         // Branch group
         beq_inst: begin alu_op <= ALU_SUB; branch_enable <= 1; end
-        //bne_inst: TODO
-        //blt_inst: TODO
+        bne_inst: begin alu_op <= ALU_SUB; branch_enable <= 1; alu_inv_zero <= 1; end
+        blt_inst: begin alu_op <= ALU_LT; branch_enable <= 1; alu_inv_zero <= 1; end
         bge_inst: begin alu_op <= ALU_LT; branch_enable <= 1; end
-        //bltu_inst: TODO
+        bltu_inst: begin alu_op <= ALU_LTU; branch_enable <= 1; alu_inv_zero <= 1; end
         bgeu_inst: begin alu_op <= ALU_LTU; branch_enable <= 1; end
         // Load group
         //lb_inst: TODO
