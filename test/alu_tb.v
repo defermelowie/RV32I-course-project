@@ -15,6 +15,7 @@ module alu_tb;
 // IO
 reg [XLEN-1:0] in_0, in_1;
 reg [3:0] operation;
+reg inv_zero;
 wire [XLEN-1:0] out;
 wire zero;
 
@@ -23,12 +24,15 @@ alu DUT (
     .in_0(in_0),
     .in_1(in_1),
     .operation(operation),
+    .inv_zero(inv_zero),
     .out(out),
     .zero(zero)
 );
 
 // Code for testing
 initial begin
+    inv_zero <= 0;
+
     $display("START TEST: add");
     operation <= ALU_ADD;
     in_0 <= 5;
