@@ -1,6 +1,6 @@
 module immediate_generator (
-    instruction,
-    immediate_out
+    instruction,    // input -> instruction
+    immediate_out   // output -> generated immediate
 );
 
 // -- Include definitions -------------------------------------
