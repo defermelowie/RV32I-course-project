@@ -101,9 +101,9 @@ always @(*) begin
         beq_inst: begin alu_op <= ALU_SUB; branch_enable <= 1; end
         //bne_inst: TODO
         //blt_inst: TODO
-        //bge_inst: TODO
+        bge_inst: begin alu_op <= ALU_LT; branch_enable <= 1; end
         //bltu_inst: TODO
-        //bgeu_inst: TODO
+        bgeu_inst: begin alu_op <= ALU_LTU; branch_enable <= 1; end
         // Load group
         //lb_inst: TODO
         //lh_inst: TODO
@@ -120,8 +120,8 @@ always @(*) begin
         // Arithmetic & logic immediate group
         addi_inst: begin alu_op <= ALU_ADD; alu_src <= 1; reg_write_enable <= 1; end
         slli_inst: begin alu_op <= ALU_LSL; alu_src <= 1; reg_write_enable <= 1; end
-        //slti_inst: TODO
-        //sltiu_inst: TODO
+        slti_inst: begin alu_op <= ALU_LT; alu_src <= 1; reg_write_enable <= 1; end
+        sltiu_inst: begin alu_op <= ALU_LTU; alu_src <= 1; reg_write_enable <= 1; end
         xori_inst: begin alu_op <= ALU_XOR; alu_src <= 1; reg_write_enable <= 1; end
         srli_inst: begin alu_op <= ALU_LSR; alu_src <= 1; reg_write_enable <= 1; end
         srai_inst: begin alu_op <= ALU_ASR; alu_src <= 1; reg_write_enable <= 1; end
@@ -131,11 +131,11 @@ always @(*) begin
         add_inst: begin alu_op <= ALU_ADD; reg_write_enable <= 1; end
         sub_inst: begin alu_op <= ALU_SUB; reg_write_enable <= 1; end
         sll_inst: begin alu_op <= ALU_LSL; reg_write_enable <= 1; end
-        //slt_inst: TODO
-        //sltu_inst: TODO
+        slt_inst: begin alu_op <= ALU_LT; reg_write_enable <= 1; end
+        sltu_inst: begin alu_op <= ALU_LTU; reg_write_enable <= 1; end
         xor_inst: begin alu_op <= ALU_XOR; reg_write_enable <= 1; end
         srl_inst: begin alu_op <= ALU_LSR; reg_write_enable <= 1; end
-        //sra_inst: TODO
+        sra_inst: begin alu_op <= ALU_ASR; reg_write_enable <= 1; end
         or_inst: begin alu_op <= ALU_OR; reg_write_enable <= 1; end
         and_inst: begin alu_op <= ALU_AND; reg_write_enable <= 1; end
         default: ill_instr <= 1;

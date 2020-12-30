@@ -119,6 +119,41 @@ initial begin
     #1 `assert(out, 'hFFFFFFFF)
     $display("TEST DONE: asr");
 
+    $display("START TEST: slt");
+    operation <= ALU_LT;
+    in_0 <= 10;
+    in_1 <= 3;
+    #1 `assert(out, 0)
+    in_0 <= 2;
+    in_1 <= 5;
+    #1 `assert(out, 1)
+    in_0 <= -10;
+    in_1 <= 3;
+    #1 `assert(out, 1)
+    in_0 <= -2;
+    in_1 <= -3;
+    #1 `assert(out, 0)
+    $display("TEST DONE: slt");
+
+    $display("START TEST: sltu");
+    operation <= ALU_LTU;
+    in_0 <= 10;
+    in_1 <= 3;
+    #1 `assert(out, 0)
+    in_0 <= 2;
+    in_1 <= 5;
+    #1 `assert(out, 1)
+    in_0 <= -10;
+    in_1 <= 3;
+    #1 `assert(out, 0)
+    in_0 <= 5;  //0101
+    in_1 <= -3; //1101
+    #1 `assert(out, 1)
+    in_0 <= -2; //1111
+    in_1 <= -3; //1101
+    #1 `assert(out, 0)
+    $display("TEST DONE: sltu");
+
     $display("ALL TEST FINISHED");
     $stop();
 end
