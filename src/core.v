@@ -5,14 +5,39 @@ module core (
     io_output_bus
 );
 
+
 // -- Include definitions -------------------------------------
 `include "riscv.h" // Contains XLEN definition
+
 
 // -- Module IO -----------------------------------------------
 input clock, reset;
 
+
 // -- Instruction Fetch stage ---------------------------------
-// TODO
+reg IF_pc_in;
+// TODO dertermine pc in
+
+// -- Instruction memory ------
+reg IF_instruction;
+instruction_memory INSTRUCTION_MEMORY(
+    .address(IF_pc_in), // pc in instead of pc out because address has an input register
+	.clock(clock),  
+	.data(32'b0),       // Set to zero since write is never used
+	.wren(0),           // Never write to instruction mem (is initialized)  
+	.q(IF_instruction)       
+);
+
+// -- Program counter ---------
+// Needed since the signal after the input register of "INSTRUCTION_MEMORY" is inaccessible
+reg IF_pc_out;
+register PC(
+    .in(IF_pc_in),
+    .out(IF_pc_out),
+    .clock(clock),
+    .reset(reset)
+);
+
 
 // -- Instruction Decode stage --------------------------------
 
@@ -40,8 +65,8 @@ register_file REGISTER_FILE(
     .write_enable(), // TODO
     .read_data_0(ID_read_data_0), 
     .read_data_1(ID_read_data_1), 
-    .clock(), // TODO     
-    .reset() // TODO    
+    .clock(clock),   
+    .reset(reset) 
 );
 
 
@@ -51,6 +76,7 @@ immediate_generator IMMEDIATE_GENERATOR(
     .instruction(), // TODO
     .immediate_out(ID_immediate_out)
 );
+
 
 // -- Execution stage -----------------------------------------
 
@@ -66,8 +92,10 @@ alu ALU(
     .zero(EX_alu_zero)      
 );
 
+
 // -- Memory access stage -------------------------------------
 // TODO
+
 
 // -- Write back stage ----------------------------------------
 // TODO
