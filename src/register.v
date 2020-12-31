@@ -5,6 +5,11 @@ module register (
     clock,          // input -> clock
     reset           // input -> resets register
 );
+parameter SIZE = 1;
+
+input [SIZE-1:0] in;
+input write_enable, clock, reset;
+output reg [SIZE-1:0] out;
 
 always @(posedge clock) begin
     if (reset)
