@@ -82,10 +82,10 @@ register_file REGISTER_FILE(
     .write_reg(ID_instruction[11:7]),
     .write_data(0), // TODO get from WB
     .write_enable(0), // TODO (WB_reg_write_enable)
-    .read_data_0(ID_read_data_0), 
-    .read_data_1(ID_read_data_1), 
-    .clock(clock),   
-    .reset(reset) 
+    .read_data_0(ID_read_data_0),
+    .read_data_1(ID_read_data_1),
+    .clock(clock),
+    .reset(reset)
 );
 
 
@@ -114,8 +114,8 @@ register #(4) ID_alu_op_EX (.in(ID_alu_op), .write_enable('1), .out(EX_alu_op), 
 reg [XLEN-1:0] EX_alu_out;
 reg EX_alu_zero;
 alu ALU(
-    .in_0(0), // TODO
-    .in_1(0), // TODO
+    .in_0(0), // TODO (depends on forwarding)
+    .in_1(0), // TODO (depends on forwarding & EX_alu_src)
     .operation(EX_alu_op),
     .inv_zero(EX_alu_inv_zero),
     .out(EX_alu_out),
