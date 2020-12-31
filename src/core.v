@@ -33,6 +33,7 @@ instruction_memory INSTRUCTION_MEMORY(
 reg IF_pc_out;
 register PC(
     .in(IF_pc_in),
+    .write_enable(), // TODO don't write pc when stalling
     .out(IF_pc_out),
     .clock(clock),
     .reset(reset)
@@ -44,7 +45,8 @@ register PC(
 // -- Control -----------------
 reg ID_branch_enable, ID_mem_write_enable, ID_reg_write_enable, ID_mem_to_reg, ID_alu_src, ID_alu_inv_zero, ID_ill_instr;   // Control outputs
 control CONTROL(
-    .instruction(), // TODO      
+    .instruction(), // TODO   
+    .stale(), // TODO  
     .branch_enable(ID_branch_enable),      
     .mem_write_enable(ID_mem_write_enable),   
     .reg_write_enable(ID_reg_write_enable),   

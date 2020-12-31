@@ -1,5 +1,6 @@
 module control (
     instruction,        // input -> full instruction
+    stale,              // input -> high if processor must stale
     branch_enable,      // output -> high for branch instructions
     mem_write_enable,   // output -> high enables write to data memory
     reg_write_enable,   // output -> high enables write to registerfile
@@ -16,6 +17,7 @@ module control (
 
 // -- Module IO -------------------------------------------
 input [31:0] instruction;
+input stale;
 output reg branch_enable, mem_write_enable, reg_write_enable, mem_to_reg, alu_src, alu_inv_zero, ill_instr;
 output reg [3:0] alu_op;
 
@@ -93,55 +95,57 @@ always @(*) begin
     alu_inv_zero <= 0;
 	alu_op <= 'b0;
     ill_instr <= 0;
-    // Set signal if needed for instruction
-    case (1'b1)
-        lui_inst: begin alu_op <= ALU_PASS_1; alu_src <= 1; reg_write_enable <= 1; end
-        //auipc_inst: TODO
-        //jal_inst: TODO
-        //jalr_inst: TODO
-        // Branch group
-        beq_inst: begin alu_op <= ALU_SUB; branch_enable <= 1; end
-        bne_inst: begin alu_op <= ALU_SUB; branch_enable <= 1; alu_inv_zero <= 1; end
-        blt_inst: begin alu_op <= ALU_LT; branch_enable <= 1; alu_inv_zero <= 1; end
-        bge_inst: begin alu_op <= ALU_LT; branch_enable <= 1; end
-        bltu_inst: begin alu_op <= ALU_LTU; branch_enable <= 1; alu_inv_zero <= 1; end
-        bgeu_inst: begin alu_op <= ALU_LTU; branch_enable <= 1; end
-        // Load group
-        //lb_inst: TODO
-        //lh_inst: TODO
-        lw_inst: begin alu_op <= ALU_ADD; alu_src <= 1; reg_write_enable <= 1; mem_to_reg <= 1; end
-        //ld_inst: TODO
-        //lbu_inst: TODO
-        //lhu_inst: TODO
-        //lwu_inst: TODO
-        // Store group
-        //sb_inst: TODO
-        //sh_inst: TODO
-        sw_inst: begin alu_op <= ALU_ADD; alu_src <= 1; mem_write_enable <= 1; end
-        //sd_inst: TODO
-        // Arithmetic & logic immediate group
-        addi_inst: begin alu_op <= ALU_ADD; alu_src <= 1; reg_write_enable <= 1; end
-        slli_inst: begin alu_op <= ALU_LSL; alu_src <= 1; reg_write_enable <= 1; end
-        slti_inst: begin alu_op <= ALU_LT; alu_src <= 1; reg_write_enable <= 1; end
-        sltiu_inst: begin alu_op <= ALU_LTU; alu_src <= 1; reg_write_enable <= 1; end
-        xori_inst: begin alu_op <= ALU_XOR; alu_src <= 1; reg_write_enable <= 1; end
-        srli_inst: begin alu_op <= ALU_LSR; alu_src <= 1; reg_write_enable <= 1; end
-        srai_inst: begin alu_op <= ALU_ASR; alu_src <= 1; reg_write_enable <= 1; end
-        ori_inst: begin alu_op <= ALU_OR; alu_src <= 1; reg_write_enable <= 1; end
-        andi_inst: begin alu_op <= ALU_AND; alu_src <= 1; reg_write_enable <= 1; end
-        // Arithmetic & logic R-type instructions
-        add_inst: begin alu_op <= ALU_ADD; reg_write_enable <= 1; end
-        sub_inst: begin alu_op <= ALU_SUB; reg_write_enable <= 1; end
-        sll_inst: begin alu_op <= ALU_LSL; reg_write_enable <= 1; end
-        slt_inst: begin alu_op <= ALU_LT; reg_write_enable <= 1; end
-        sltu_inst: begin alu_op <= ALU_LTU; reg_write_enable <= 1; end
-        xor_inst: begin alu_op <= ALU_XOR; reg_write_enable <= 1; end
-        srl_inst: begin alu_op <= ALU_LSR; reg_write_enable <= 1; end
-        sra_inst: begin alu_op <= ALU_ASR; reg_write_enable <= 1; end
-        or_inst: begin alu_op <= ALU_OR; reg_write_enable <= 1; end
-        and_inst: begin alu_op <= ALU_AND; reg_write_enable <= 1; end
-        default: ill_instr <= 1;
-    endcase
+    if (!stale) begin // If stale: set all signals to 0
+        // Set signal if needed for instruction
+        case (1'b1)
+            lui_inst: begin alu_op <= ALU_PASS_1; alu_src <= 1; reg_write_enable <= 1; end
+            //auipc_inst: TODO
+            //jal_inst: TODO
+            //jalr_inst: TODO
+            // Branch group
+            beq_inst: begin alu_op <= ALU_SUB; branch_enable <= 1; end
+            bne_inst: begin alu_op <= ALU_SUB; branch_enable <= 1; alu_inv_zero <= 1; end
+            blt_inst: begin alu_op <= ALU_LT; branch_enable <= 1; alu_inv_zero <= 1; end
+            bge_inst: begin alu_op <= ALU_LT; branch_enable <= 1; end
+            bltu_inst: begin alu_op <= ALU_LTU; branch_enable <= 1; alu_inv_zero <= 1; end
+            bgeu_inst: begin alu_op <= ALU_LTU; branch_enable <= 1; end
+            // Load group
+            //lb_inst: TODO
+            //lh_inst: TODO
+            lw_inst: begin alu_op <= ALU_ADD; alu_src <= 1; reg_write_enable <= 1; mem_to_reg <= 1; end
+            //ld_inst: TODO
+            //lbu_inst: TODO
+            //lhu_inst: TODO
+            //lwu_inst: TODO
+            // Store group
+            //sb_inst: TODO
+            //sh_inst: TODO
+            sw_inst: begin alu_op <= ALU_ADD; alu_src <= 1; mem_write_enable <= 1; end
+            //sd_inst: TODO
+            // Arithmetic & logic immediate group
+            addi_inst: begin alu_op <= ALU_ADD; alu_src <= 1; reg_write_enable <= 1; end
+            slli_inst: begin alu_op <= ALU_LSL; alu_src <= 1; reg_write_enable <= 1; end
+            slti_inst: begin alu_op <= ALU_LT; alu_src <= 1; reg_write_enable <= 1; end
+            sltiu_inst: begin alu_op <= ALU_LTU; alu_src <= 1; reg_write_enable <= 1; end
+            xori_inst: begin alu_op <= ALU_XOR; alu_src <= 1; reg_write_enable <= 1; end
+            srli_inst: begin alu_op <= ALU_LSR; alu_src <= 1; reg_write_enable <= 1; end
+            srai_inst: begin alu_op <= ALU_ASR; alu_src <= 1; reg_write_enable <= 1; end
+            ori_inst: begin alu_op <= ALU_OR; alu_src <= 1; reg_write_enable <= 1; end
+            andi_inst: begin alu_op <= ALU_AND; alu_src <= 1; reg_write_enable <= 1; end
+            // Arithmetic & logic R-type instructions
+            add_inst: begin alu_op <= ALU_ADD; reg_write_enable <= 1; end
+            sub_inst: begin alu_op <= ALU_SUB; reg_write_enable <= 1; end
+            sll_inst: begin alu_op <= ALU_LSL; reg_write_enable <= 1; end
+            slt_inst: begin alu_op <= ALU_LT; reg_write_enable <= 1; end
+            sltu_inst: begin alu_op <= ALU_LTU; reg_write_enable <= 1; end
+            xor_inst: begin alu_op <= ALU_XOR; reg_write_enable <= 1; end
+            srl_inst: begin alu_op <= ALU_LSR; reg_write_enable <= 1; end
+            sra_inst: begin alu_op <= ALU_ASR; reg_write_enable <= 1; end
+            or_inst: begin alu_op <= ALU_OR; reg_write_enable <= 1; end
+            and_inst: begin alu_op <= ALU_AND; reg_write_enable <= 1; end
+            default: ill_instr <= 1;
+        endcase
+    end
 end
     
 endmodule
