@@ -26,24 +26,24 @@ wire branch_enable;
 // -- Instruction Fetch stage -----------------------------------------------------------------------------------------------
 // Wire defs ------------------
 wire [8:0] IF_pc_in;
-reg [8:0] IF_pc_out;
+wire [8:0] IF_pc_out;
 
 // -- Dertermine pc in ----------------------------------------
 assign IF_pc_in = (branch_enable) ? pc_branch_address : IF_pc_out + 4;
 
 // -- Instruction memory --------------------------------------
-reg [XLEN-1:0] IF_instruction;
+wire [XLEN-1:0] IF_instruction;
 instruction_memory INSTRUCTION_MEMORY(
     .address(IF_pc_in), // pc in instead of pc out because address has an input register
 	.clock(clock),  
 	.data(32'b0),       // Set to zero since write is never used
-	.wren(0),           // Never write to instruction mem (is initialized)  
+	.wren(1'b0),        // Never write to instruction mem (is initialized)  
 	.q(IF_instruction)       
 );
 
 // -- Program counter -----------------------------------------
 // Needed since the signal after the input register of "INSTRUCTION_MEMORY" is inaccessible
-register PC(
+register #(9) PC(
     .in(IF_pc_in),
     .write_enable(!stale),
     .out(IF_pc_out),
@@ -58,7 +58,7 @@ wire [31:0] ID_instruction;
 wire [8:0] ID_pc_out;
 
 // -- Pipeline reg IF -> ID -----------------------------------
-register #(31) IF_instruction_ID (
+register #(32) IF_instruction_ID (
     .in(IF_instruction), 
     .write_enable(!stale), 
     .out(ID_instruction), 
@@ -74,8 +74,9 @@ register #(9) IF_pc_out_ID (
 );
 
 // -- Control -------------------------------------------------
-reg ID_branch_inst, ID_branch_mode, ID_mem_write_enable, ID_reg_write_enable, ID_mem_to_reg, ID_alu_src, ID_ill_instr;   // Control outputs
-reg [3:0] ID_alu_op;
+wire ID_branch_inst, ID_mem_write_enable, ID_reg_write_enable, ID_mem_to_reg, ID_alu_src, ID_ill_instr;   // Control outputs
+wire [2:0] ID_branch_mode;
+wire [3:0] ID_alu_op;
 control CONTROL(
     .instruction(ID_instruction),  
     .stale(stale), 
@@ -90,7 +91,7 @@ control CONTROL(
 );
 
 // -- Register file -------------------------------------------
-reg [XLEN-1:0] ID_read_data_0, ID_read_data_1;
+wire [XLEN-1:0] ID_read_data_0, ID_read_data_1;
 wire [XLEN-1:0] WB_reg_data_in;
 wire WB_reg_write_enable;
 register_file REGISTER_FILE(
@@ -106,7 +107,7 @@ register_file REGISTER_FILE(
 );
 
 // -- Branch comparison unit ----------------------------------
-reg ID_branch_comp; 
+wire ID_branch_comp; 
 branch_comparison_unit BRANCH_COMPARISON_UNIT(
     .in_0(ID_read_data_0),
     .in_1(ID_read_data_1),
@@ -115,7 +116,7 @@ branch_comparison_unit BRANCH_COMPARISON_UNIT(
 );
 
 // -- Immediate generator -------------------------------------
-reg [XLEN-1:0] ID_immediate_out;
+wire [XLEN-1:0] ID_immediate_out;
 immediate_generator IMMEDIATE_GENERATOR(
     .instruction(ID_instruction),
     .immediate_out(ID_immediate_out)
@@ -147,7 +148,7 @@ register #(1) ID_alu_src_EX (.in(ID_alu_src), .write_enable('1), .out(EX_alu_src
 register #(4) ID_alu_op_EX (.in(ID_alu_op), .write_enable('1), .out(EX_alu_op), .clock(clock), .reset(reset));
 
 // -- Determine alu source ------------------------------------
-reg [FORWARDING_CODE_SIZE-1:0] EX_forward_0, EX_forward_1;
+wire [FORWARDING_CODE_SIZE-1:0] EX_forward_0, EX_forward_1;
 reg [XLEN-1:0] EX_alu_in_0;
 reg [XLEN-1:0] EX_alu_in_1;
 wire [XLEN-1:0] MEM_alu_out;
@@ -167,7 +168,7 @@ always @(*) begin
 end
 
 // -- Arithmetic logic unit -----------------------------------
-reg [XLEN-1:0] EX_alu_out;
+wire [XLEN-1:0] EX_alu_out;
 alu ALU(
     .in_0(EX_alu_in_0),
     .in_1((EX_alu_src) ? EX_immediate_out : EX_alu_in_1),
@@ -192,9 +193,9 @@ register #(1) EX_mem_to_reg_MEM (.in(EX_mem_to_reg), .write_enable('1), .out(MEM
 
 
 // -- Data memory ---------------------------------------------
-reg MEM_data_mem_out;
+wire [XLEN-1:0] MEM_data_mem_out;
 data_memory DATA_MEMORY(
-	.address(MEM_alu_out),
+	.address(MEM_alu_out[8:0]),
 	.clock(clock),  
 	.data(MEM_mem_data),
     .wren(MEM_mem_write_enable),
@@ -236,7 +237,7 @@ forwarding_unit FORWARDING_UNIT (
 // -- Hazard detection unit -----------------------------------
 hazard_detection_unit HAZARD_DETECTION_UNIT (
     .EX_mem_to_reg(EX_mem_to_reg),
-    .EX_destination_register(EX_alu_out),
+    .EX_destination_register(EX_instruction[11:7]),
     .ID_read_register_0(ID_instruction[19:15]),
     .ID_read_register_1(ID_instruction[24:20]),
     .stale(stale)
