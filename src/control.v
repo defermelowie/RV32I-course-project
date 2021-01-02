@@ -2,6 +2,7 @@ module control (
     instruction,        // input -> full instruction
     stale,              // input -> high if processor must stale
     branch_enable,      // output -> high for branch instructions
+    branch_mode,        // output -> branch comparison mode (definitions in comparison_codes.h))
     mem_write_enable,   // output -> high enables write to data memory
     reg_write_enable,   // output -> high enables write to registerfile
     mem_to_reg,         // output -> high routes data memory output to register input
@@ -13,12 +14,14 @@ module control (
 
 // -- Include definitions ---------------------------------
 `include "alu_codes.h"  // Contains risc-v opcodes
+`include "comparison_codes.h"   // Contains comparison codes
 `include "opcodes.h"    // Contains alu operation codes
 
 // -- Module IO -------------------------------------------
 input [31:0] instruction;
 input stale;
 output reg branch_enable, mem_write_enable, reg_write_enable, mem_to_reg, alu_src, alu_inv_zero, ill_instr;
+output reg [2:0] branch_mode;
 output reg [3:0] alu_op;
 
 // -- Extract opcode --------------------------------------
@@ -88,6 +91,7 @@ wire and_inst = (opcode == reg_gr) && (funct3 == 3'b111) && (funct7 == 7'b000000
 always @(*) begin
     // Reset all signals
     branch_enable <= 0;
+    branch_mode <= 0;
     mem_write_enable <= 0;
     reg_write_enable <= 0;
     mem_to_reg <= 0;
@@ -103,12 +107,12 @@ always @(*) begin
             //jal_inst: TODO
             //jalr_inst: TODO
             // Branch group
-            beq_inst: begin alu_op <= ALU_SUB; branch_enable <= 1; end
-            bne_inst: begin alu_op <= ALU_SUB; branch_enable <= 1; alu_inv_zero <= 1; end
-            blt_inst: begin alu_op <= ALU_LT; branch_enable <= 1; alu_inv_zero <= 1; end
-            bge_inst: begin alu_op <= ALU_LT; branch_enable <= 1; end
-            bltu_inst: begin alu_op <= ALU_LTU; branch_enable <= 1; alu_inv_zero <= 1; end
-            bgeu_inst: begin alu_op <= ALU_LTU; branch_enable <= 1; end
+            beq_inst: begin branch_enable <= 1; branch_mode <= EQ; end
+            bne_inst: begin branch_enable <= 1; branch_mode <= NE; end
+            blt_inst: begin branch_enable <= 1; branch_mode <= LT; end
+            bge_inst: begin branch_enable <= 1; branch_mode <= GE; end
+            bltu_inst: begin branch_enable <= 1; branch_mode <= LTU; end
+            bgeu_inst: begin branch_enable <= 1; branch_mode <= GEU; end
             // Load group
             //lb_inst: TODO
             //lh_inst: TODO
