@@ -8,7 +8,6 @@ module control (
     mem_to_reg,         // output -> high routes data memory output to register input
     alu_op,             // output -> ALU operating mode (definitions in alu_codes.h)
     alu_src,            // output -> high: alu input = immediate, low: alu input = register file
-    alu_inv_zero,       // output -> high inverts alu zero output
     ill_instr           // output -> high if instruction is not recognized
 );
 
@@ -20,7 +19,7 @@ module control (
 // -- Module IO -------------------------------------------
 input [31:0] instruction;
 input stale;
-output reg branch_enable, mem_write_enable, reg_write_enable, mem_to_reg, alu_src, alu_inv_zero, ill_instr;
+output reg branch_enable, mem_write_enable, reg_write_enable, mem_to_reg, alu_src, ill_instr;
 output reg [2:0] branch_mode;
 output reg [3:0] alu_op;
 
@@ -96,7 +95,6 @@ always @(*) begin
     reg_write_enable <= 0;
     mem_to_reg <= 0;
     alu_src <= 0;
-    alu_inv_zero <= 0;
 	alu_op <= 'b0;
     ill_instr <= 0;
     if (!stale) begin // If stale: set all signals to 0
