@@ -2,9 +2,7 @@ module alu (
     in_0,           // input -> first data input of alu
     in_1,           // input -> second data input of alu
     operation,      // input -> specify operation
-    inv_zero,       // input -> high causes "zero" to invert
     out,            // output -> data output
-    zero            // output -> high when output is zero (and if "invert_zero" is low)
 );
 
 // -- Include definitions -------------------------------------
@@ -14,9 +12,7 @@ module alu (
 // -- Module IO -----------------------------------------------
 input [XLEN-1:0] in_0, in_1;
 input [3:0] operation;
-input inv_zero;
 output reg [XLEN-1:0] out;
-output reg zero;
 
 // -- Internal signals ----------------------------------------
 wire signed [XLEN-1:0] in_0_signed, in_1_signed;    // Must be signed in order for right shift arithmetic (>>>) and set less than to work
@@ -46,7 +42,6 @@ always @(*) begin
         ALU_LTU: out <= (in_0 < in_1)? 1 : 0;
         default: out <= {XLEN{1'b0}};   // Return zero in case of unknown operation code
     endcase
-    zero <= (inv_zero) ? ~(out == {XLEN{1'b0}}) : (out == {XLEN{1'b0}});
 end
 
 endmodule

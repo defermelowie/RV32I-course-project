@@ -58,9 +58,8 @@ register #(31) IF_instruction_ID (.in(IF_instruction), .write_enable(!stale), .o
 register #(9) IF_pc_out_ID (.in(IF_pc_out), .write_enable(!stale), .out(ID_pc_out), .clock(clock), .reset(reset)); // TODO add flush IF to reset
 
 // -- Control -----------------
-reg ID_branch_enable, ID_mem_write_enable, ID_reg_write_enable, ID_mem_to_reg, ID_alu_src, ID_alu_inv_zero, ID_ill_instr;   // Control outputs
+reg ID_branch_enable, ID_mem_write_enable, ID_reg_write_enable, ID_mem_to_reg, ID_alu_src, ID_ill_instr;   // Control outputs
 reg [3:0] ID_alu_op;
-wire ID_control = {ID_branch_enable, ID_mem_write_enable, ID_reg_write_enable, ID_mem_to_reg, ID_alu_src, ID_alu_inv_zero, ID_ill_instr};
 control CONTROL(
     .instruction(ID_instruction),  
     .stale(stale), 
@@ -69,8 +68,7 @@ control CONTROL(
     .reg_write_enable(ID_reg_write_enable),   
     .mem_to_reg(ID_mem_to_reg),         
     .alu_op(ID_alu_op),             
-    .alu_src(ID_alu_src),            
-    .alu_inv_zero(ID_alu_inv_zero),           
+    .alu_src(ID_alu_src),          
     .ill_instr(ID_ill_instr)           
 );
 
@@ -100,26 +98,21 @@ immediate_generator IMMEDIATE_GENERATOR(
 // -- Execution stage -----------------------------------------
 // Wire defs ------------------
 wire [XLEN-1:0] EX_read_data_0, EX_read_data_1;
-wire EX_branch_enable, EX_mem_write_enable, EX_reg_write_enable, EX_mem_to_reg, EX_alu_src, EX_alu_inv_zero, EX_ill_instr;
+wire EX_branch_enable, EX_mem_write_enable, EX_reg_write_enable, EX_mem_to_reg, EX_alu_src, EX_ill_instr;
 wire EX_alu_op;
-wire EX_control = {EX_branch_enable, EX_mem_write_enable, EX_reg_write_enable, EX_mem_to_reg, EX_alu_src, EX_alu_inv_zero, EX_ill_instr};
 
 // -- Pipeline reg ID -> EX ---
 register #(XLEN) ID_read_data_0_EX (.in(ID_read_data_0), .write_enable('1), .out(EX_read_data_0), .clock(clock), .reset(reset));
 register #(XLEN) ID_read_data_1_EX (.in(ID_read_data_1), .write_enable('1), .out(EX_read_data_1), .clock(clock), .reset(reset));
-register #(7) ID_control_EX (.in(ID_control), .write_enable('1), .out(EX_control), .clock(clock), .reset(reset));
 register #(4) ID_alu_op_EX (.in(ID_alu_op), .write_enable('1), .out(EX_alu_op), .clock(clock), .reset(reset));
 
 // -- Arithmetic logic unit ---
 reg [XLEN-1:0] EX_alu_out;
-reg EX_alu_zero;
 alu ALU(
     .in_0(0), // TODO (depends on forwarding)
     .in_1(0), // TODO (depends on forwarding & EX_alu_src)
     .operation(EX_alu_op),
-    .inv_zero(EX_alu_inv_zero),
-    .out(EX_alu_out),
-    .zero(EX_alu_zero)
+    .out(EX_alu_out)
 );
 
 
