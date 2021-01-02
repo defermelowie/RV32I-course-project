@@ -6,13 +6,22 @@ module hazard_detection_unit (
     stale                       // output -> high if processor must stale
 );
 
+// -- Include definitions -------------------------------------
+
+// -- Module IO -----------------------------------------------
+input EX_mem_to_reg;
+input [4:0] EX_destination_register;
+input [4:0] ID_read_register_0;
+input [4:0] ID_read_register_1;
+output stale;
+
 // -- Determine hazard ----------------------------------------
 wire data_hazard = (
     EX_mem_to_reg &&
     (
         (EX_destination_register == ID_read_register_0) ||
         (EX_destination_register == ID_read_register_1)
-    );
+    )
 );
 
 // -- Set signals ---------------------------------------------

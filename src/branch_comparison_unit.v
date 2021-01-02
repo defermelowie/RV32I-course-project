@@ -23,12 +23,12 @@ assign in_1_signed = in_1;
 always @(*) begin
     branch <= 0;    // Preset branch to zero, then set in neccesary
     case (mode)
-        EQ: if (in_0 == in_1) branch => 1;
-        NE: if (in_0 != in_1) branch => 1;
-        LT: if (in_0_signed < in_1_signed) branch => 1;
-        GE: if (in_0_signed >= in_1_signed) branch => 1;
-        LTU: if (in_0 < in_1) branch => 1;
-        GEU: if (in_0 >= in_1) branch => 1;
+        EQ: if (in_0 == in_1) branch <= 1;
+        NE: if (in_0 != in_1) branch <= 1;
+        LT: if (in_0_signed < in_1_signed) branch <= 1;
+        GE: if (in_0_signed >= in_1_signed) branch <= 1;
+        LTU: if (in_0 < in_1) branch <= 1;
+        GEU: if (in_0 >= in_1) branch <= 1;
         default: branch <= 0; // In case of unknown mode, do not branch
     endcase 
 end
