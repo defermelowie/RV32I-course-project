@@ -26,11 +26,15 @@ reg [XLEN-1:0] reg_file [31:0];
 always @ (*) begin
         if (read_reg_0 == 0)	// x0 is always zero
             read_data_0 <= 0;
+        else if (read_reg_0 == write_reg)
+            read_data_0 <= write_data;
         else
             read_data_0 <= reg_file [read_reg_0];
             
         if (read_reg_1 == 0) // x0 is always zero
             read_data_1 <= 0;
+        else if (read_reg_1 == write_reg)
+            read_data_1 <= write_data;
         else
             read_data_1 <= reg_file [read_reg_1];
 end
