@@ -33,13 +33,13 @@ always @(*) begin
     if (reset)
         IF_pc_in <= 0;
     else 
-        IF_pc_in <= (branch_enable) ? pc_branch_address : IF_pc_out + 1;
+        IF_pc_in <= (branch_enable) ? pc_branch_address : IF_pc_out + 4;
 end
 
 // -- Instruction memory --------------------------------------
 wire [XLEN-1:0] IF_instruction;
 instruction_memory INSTRUCTION_MEMORY(
-    .address(IF_pc_in), // pc in instead of pc out because address has an input register
+    .address(IF_pc_in >> 2), // pc in instead of pc out because address has an input register
 	.clock(clock),  
 	.data(32'b0),       // Set to zero since write is never used
 	.wren(1'b0),        // Never write to instruction mem (is initialized)  
@@ -97,12 +97,13 @@ control CONTROL(
 
 // -- Register file -------------------------------------------
 wire [XLEN-1:0] ID_read_data_0, ID_read_data_1;
+wire [31:0] WB_instruction;
 wire [XLEN-1:0] WB_reg_data_in;
 wire WB_reg_write_enable;
 register_file REGISTER_FILE(
     .read_reg_0(ID_instruction[19:15]),
     .read_reg_1(ID_instruction[24:20]),
-    .write_reg(ID_instruction[11:7]),
+    .write_reg(WB_instruction[11:7]),
     .write_data(WB_reg_data_in),
     .write_enable(WB_reg_write_enable),
     .read_data_0(ID_read_data_0),
@@ -113,6 +114,7 @@ register_file REGISTER_FILE(
 
 // -- Branch comparison unit ----------------------------------
 wire ID_branch_comp; 
+// TODO forward signals to branch comparison unit
 branch_comparison_unit BRANCH_COMPARISON_UNIT(
     .in_0(ID_read_data_0),
     .in_1(ID_read_data_1),
@@ -210,19 +212,18 @@ data_memory DATA_MEMORY(
 
 // -- Write back stage ------------------------------------------------------------------------------------------------------
 // Wire defs ------------------
-wire [31:0] WB_instruction;
 wire WB_mem_to_reg;
-wire [XLEN-1:0] WB_data_mem_out, WB_mem_data;
+wire [XLEN-1:0] WB_data_mem_out, WB_alu_out;
 
 // -- Pipeline reg MEM -> WB ----------------------------------
 register #(32) MEM_instruction_WB (.in(MEM_instruction), .write_enable('1), .out(WB_instruction), .clock(clock), .reset(reset));
 register #(XLEN) MEM_data_mem_out_WB (.in(MEM_data_mem_out), .write_enable('1), .out(WB_data_mem_out), .clock(clock), .reset(reset));
-register #(XLEN) MEM_mem_data_WB (.in(MEM_mem_data), .write_enable('1), .out(WB_mem_data), .clock(clock), .reset(reset));
+register #(XLEN) MEM_alu_out_WB (.in(MEM_alu_out), .write_enable('1), .out(WB_alu_out), .clock(clock), .reset(reset));
 register #(1) MEM_reg_write_enable_WB (.in(MEM_reg_write_enable), .write_enable('1), .out(WB_reg_write_enable), .clock(clock), .reset(reset));
 register #(1) MEM_mem_to_reg_WB (.in(MEM_mem_to_reg), .write_enable('1), .out(WB_mem_to_reg), .clock(clock), .reset(reset));
 
 // Determine registerfile data source ----------------------------------
-assign WB_reg_data_in = (WB_mem_to_reg) ? WB_data_mem_out : WB_mem_data;
+assign WB_reg_data_in = (WB_mem_to_reg) ? WB_data_mem_out : WB_alu_out;
 
 
 // -- Forwarding and hazard detection ---------------------------------------------------------------------------------------
