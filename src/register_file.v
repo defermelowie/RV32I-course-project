@@ -40,7 +40,7 @@ integer i;
 always @ (posedge clock) begin
     if (reset)                      // Set all registers to zero
         for (i=0; i < 32; i=i+1)
-            reg_file [i] <= 32'b0;
+            reg_file [i] <= {XLEN{1'b0}};
     else if (write_enable == 1) begin
         if (write_reg != 0) begin   // Register x0 can't be written
             reg_file [write_reg] <= write_data;
