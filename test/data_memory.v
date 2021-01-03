@@ -33,7 +33,7 @@ assign q = mem[address_reg];
 
 // -- Write to memory -----------------------------------------
 always @(posedge clock) begin
-    if (wren)
+    if (wren_reg)
         mem[address_reg] <= data_reg;
 end
 

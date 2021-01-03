@@ -116,20 +116,20 @@ register_file REGISTER_FILE(
 wire [FORWARDING_CODE_SIZE-1:0] forward_mode_0, forward_mode_1;
 reg [XLEN-1:0] ID_data_0, ID_data_1;
 wire [XLEN-1:0] EX_alu_out;
-wire [XLEN-1:0] MEM_mem_data;
 wire [XLEN-1:0] MEM_alu_out;
+wire [XLEN-1:0] MEM_mem_data_out;
 always @(*) begin
     case (forward_mode_0)
         ID_REG_OUT: ID_data_0 <= ID_read_data_0;
         EX_ALU_OUT: ID_data_0 <= EX_alu_out;
-        MEM_MEM_OUT: ID_data_0 <= MEM_mem_data;
+        MEM_MEM_OUT: ID_data_0 <= MEM_mem_data_out;
         MEM_ALU_OUT: ID_data_0 <= MEM_alu_out;
         default: ID_data_0 <= ID_read_data_0;
     endcase
     case (forward_mode_1)
         ID_REG_OUT: ID_data_1 <= ID_read_data_1;
         EX_ALU_OUT: ID_data_1 <= EX_alu_out;
-        MEM_MEM_OUT: ID_data_1 <= MEM_mem_data;
+        MEM_MEM_OUT: ID_data_1 <= MEM_mem_data_out;
         MEM_ALU_OUT: ID_data_1 <= MEM_alu_out;
         default: ID_data_1 <= ID_read_data_1;
     endcase
@@ -189,41 +189,41 @@ alu ALU(
 // Wire defs ------------------
 wire [31:0] MEM_instruction;
 wire MEM_mem_write_enable, MEM_reg_write_enable, MEM_mem_to_reg;
+wire [XLEN-1:0] MEM_mem_data_in;
 
 // -- Pipeline reg EX -> MEM ----------------------------------
 register #(32) EX_instruction_MEM (.in(EX_instruction), .write_enable('1), .out(MEM_instruction), .clock(clock), .reset(reset));
 register #(XLEN) EX_alu_out_MEM (.in(EX_alu_out), .write_enable('1), .out(MEM_alu_out), .clock(clock), .reset(reset));
-register #(XLEN) EX_mem_data_MEM (.in(EX_data_1), .write_enable('1), .out(MEM_mem_data), .clock(clock), .reset(reset));   // Alu in 1 -> mem data!
+register #(XLEN) EX_mem_data_in_MEM (.in(EX_data_1), .write_enable('1), .out(MEM_mem_data_in), .clock(clock), .reset(reset));   // Alu in 1 -> mem data!
 register #(1) EX_mem_write_enable_MEM (.in(EX_mem_write_enable), .write_enable('1), .out(MEM_mem_write_enable), .clock(clock), .reset(reset));
 register #(1) EX_reg_write_enable_MEM (.in(EX_reg_write_enable), .write_enable('1), .out(MEM_reg_write_enable), .clock(clock), .reset(reset));
 register #(1) EX_mem_to_reg_MEM (.in(EX_mem_to_reg), .write_enable('1), .out(MEM_mem_to_reg), .clock(clock), .reset(reset));
 
 
 // -- Data memory ---------------------------------------------
-wire [XLEN-1:0] MEM_data_mem_out;
 data_memory DATA_MEMORY(
-	.address(MEM_alu_out[8:0]),
+	.address(EX_alu_out[8:0]),   // EX instead of MEM since memory has input registers
 	.clock(clock),  
-	.data(MEM_mem_data),
-    .wren(MEM_mem_write_enable),
-	.q(MEM_data_mem_out)
+	.data(EX_data_1),            // EX instead of MEM since memory has input registers
+    .wren(EX_mem_write_enable),  // EX instead of MEM since memory has input registers
+	.q(MEM_mem_data_out)
 );
 
 
 // -- Write back stage ------------------------------------------------------------------------------------------------------
 // Wire defs ------------------
 wire WB_mem_to_reg;
-wire [XLEN-1:0] WB_data_mem_out, WB_alu_out;
+wire [XLEN-1:0] WB_mem_data_out, WB_alu_out;
 
 // -- Pipeline reg MEM -> WB ----------------------------------
 register #(32) MEM_instruction_WB (.in(MEM_instruction), .write_enable('1), .out(WB_instruction), .clock(clock), .reset(reset));
-register #(XLEN) MEM_data_mem_out_WB (.in(MEM_data_mem_out), .write_enable('1), .out(WB_data_mem_out), .clock(clock), .reset(reset));
+register #(XLEN) MEM_mem_data_out_WB (.in(MEM_mem_data_out), .write_enable('1), .out(WB_mem_data_out), .clock(clock), .reset(reset));
 register #(XLEN) MEM_alu_out_WB (.in(MEM_alu_out), .write_enable('1), .out(WB_alu_out), .clock(clock), .reset(reset));
 register #(1) MEM_reg_write_enable_WB (.in(MEM_reg_write_enable), .write_enable('1), .out(WB_reg_write_enable), .clock(clock), .reset(reset));
 register #(1) MEM_mem_to_reg_WB (.in(MEM_mem_to_reg), .write_enable('1), .out(WB_mem_to_reg), .clock(clock), .reset(reset));
 
 // Determine registerfile data source ----------------------------------
-assign WB_reg_data_in = (WB_mem_to_reg) ? WB_data_mem_out : WB_alu_out;
+assign WB_reg_data_in = (WB_mem_to_reg) ? WB_mem_data_out : WB_alu_out;
 
 
 // -- Forwarding and hazard detection ---------------------------------------------------------------------------------------
