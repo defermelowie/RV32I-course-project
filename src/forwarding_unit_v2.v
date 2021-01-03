@@ -1,4 +1,4 @@
-module forwarding_unit_v2 (
+module forwarding_unit (
     ID_instruction,             // input -> instruction in the instruction decode stage
     EX_reg_write_enable,        // input -> "reg_write_enable" from execution stage
     EX_instruction,             // input -> instruction in the execution stage
@@ -19,11 +19,11 @@ input [31:0] ID_instruction, EX_instruction, MEM_instruction;
 output reg [FORWARDING_CODE_SIZE-1:0] forward_mode_0, forward_mode_1;
 
 // -- Internal signals ----------------------------------------
-wire ID_destination_register = ID_instruction[11:7];
-wire ID_read_register_0 = ID_instruction[19:15];
-wire ID_read_register_1 = ID_instruction[24:20];
-wire EX_destination_register = EX_instruction[11:7];
-wire MEM_destination_register = MEM_instruction[11:7];
+wire [4:0] ID_destination_register = ID_instruction[11:7];
+wire [4:0] ID_read_register_0 = ID_instruction[19:15];
+wire [4:0] ID_read_register_1 = ID_instruction[24:20];
+wire [4:0] EX_destination_register = EX_instruction[11:7];
+wire [4:0] MEM_destination_register = MEM_instruction[11:7];
 
 // -- Determine hazard ----------------------------------------
 wire ex_alu_0 = (
