@@ -25,11 +25,16 @@ wire branch_enable;
 
 // -- Instruction Fetch stage -----------------------------------------------------------------------------------------------
 // Wire defs ------------------
-wire [8:0] IF_pc_in;
+reg [8:0] IF_pc_in;
 wire [8:0] IF_pc_out;
 
 // -- Dertermine pc in ----------------------------------------
-assign IF_pc_in = (branch_enable) ? pc_branch_address : IF_pc_out + 4;
+always @(*) begin
+    if (reset)
+        IF_pc_in <= 0;
+    else 
+        IF_pc_in <= (branch_enable) ? pc_branch_address : IF_pc_out + 1;
+end
 
 // -- Instruction memory --------------------------------------
 wire [XLEN-1:0] IF_instruction;
@@ -63,7 +68,7 @@ register #(32) IF_instruction_ID (
     .write_enable(!stale), 
     .out(ID_instruction), 
     .clock(clock), 
-    .reset(reset ||branch_enable)   // Flush IF registers when taking branch
+    .reset(reset || branch_enable)   // Flush IF registers when taking branch
 );
 register #(9) IF_pc_out_ID (
     .in(IF_pc_out), 
@@ -137,10 +142,10 @@ wire EX_mem_write_enable, EX_reg_write_enable, EX_mem_to_reg, EX_alu_src;
 wire [3:0] EX_alu_op;
 
 // -- Pipeline reg ID -> EX -----------------------------------
-register #(32) ID_instruction_EX (.in(EX_instruction), .write_enable('1), .out(ID_instruction), .clock(clock), .reset(reset));
+register #(32) ID_instruction_EX (.in(ID_instruction), .write_enable('1), .out(EX_instruction), .clock(clock), .reset(reset));
 register #(XLEN) ID_read_data_0_EX (.in(ID_read_data_0), .write_enable('1), .out(EX_read_data_0), .clock(clock), .reset(reset));
 register #(XLEN) ID_read_data_1_EX (.in(ID_read_data_1), .write_enable('1), .out(EX_read_data_1), .clock(clock), .reset(reset));
-register #(XLEN) ID_immediate_out_EX (.in(EX_immediate_out), .write_enable('1), .out(ID_immediate_out), .clock(clock), .reset(reset));
+register #(XLEN) ID_immediate_out_EX (.in(ID_immediate_out), .write_enable('1), .out(EX_immediate_out), .clock(clock), .reset(reset));
 register #(1) ID_mem_write_enable_EX (.in(ID_mem_write_enable), .write_enable('1), .out(EX_mem_write_enable), .clock(clock), .reset(reset));
 register #(1) ID_reg_write_enable_EX (.in(ID_reg_write_enable), .write_enable('1), .out(EX_reg_write_enable), .clock(clock), .reset(reset));
 register #(1) ID_mem_to_reg_EX (.in(ID_mem_to_reg), .write_enable('1), .out(EX_mem_to_reg), .clock(clock), .reset(reset));
