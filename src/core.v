@@ -112,12 +112,34 @@ register_file REGISTER_FILE(
     .reset(reset)
 );
 
+// -- Set data based on forwarding ----------------------------
+wire [FORWARDING_CODE_SIZE-1:0] forward_mode_0, forward_mode_1;
+reg [XLEN-1:0] ID_data_0, ID_data_1;
+wire [XLEN-1:0] EX_alu_out;
+wire [XLEN-1:0] MEM_mem_data;
+wire [XLEN-1:0] MEM_alu_out;
+always @(*) begin
+    case (forward_mode_0)
+        ID_REG_OUT: ID_data_0 <= ID_read_data_0;
+        EX_ALU_OUT: ID_data_0 <= EX_alu_out;
+        MEM_MEM_OUT: ID_data_0 <= MEM_mem_data;
+        MEM_ALU_OUT: ID_data_0 <= MEM_alu_out;
+        default: ID_data_0 <= ID_read_data_0;
+    endcase
+    case (forward_mode_1)
+        ID_REG_OUT: ID_data_1 <= ID_read_data_1;
+        EX_ALU_OUT: ID_data_1 <= EX_alu_out;
+        MEM_MEM_OUT: ID_data_1 <= MEM_mem_data;
+        MEM_ALU_OUT: ID_data_1 <= MEM_alu_out;
+        default: ID_data_1 <= ID_read_data_1;
+    endcase
+end
+
 // -- Branch comparison unit ----------------------------------
 wire ID_branch_comp; 
-// TODO forward signals to branch comparison unit
 branch_comparison_unit BRANCH_COMPARISON_UNIT(
-    .in_0(ID_read_data_0),
-    .in_1(ID_read_data_1),
+    .in_0(ID_data_0),
+    .in_1(ID_data_1),
     .mode(ID_branch_mode),
     .branch(ID_branch_comp)
 );
@@ -139,14 +161,14 @@ assign branch_enable = (ID_branch_inst && ID_branch_comp);
 // -- Execution stage -------------------------------------------------------------------------------------------------------
 // Wire defs ------------------
 wire [31:0] EX_instruction;
-wire [XLEN-1:0] EX_read_data_0, EX_read_data_1, EX_immediate_out;
+wire [XLEN-1:0] EX_data_0, EX_data_1, EX_immediate_out;
 wire EX_mem_write_enable, EX_reg_write_enable, EX_mem_to_reg, EX_alu_src;
 wire [3:0] EX_alu_op;
 
 // -- Pipeline reg ID -> EX -----------------------------------
 register #(32) ID_instruction_EX (.in(ID_instruction), .write_enable('1), .out(EX_instruction), .clock(clock), .reset(reset));
-register #(XLEN) ID_read_data_0_EX (.in(ID_read_data_0), .write_enable('1), .out(EX_read_data_0), .clock(clock), .reset(reset));
-register #(XLEN) ID_read_data_1_EX (.in(ID_read_data_1), .write_enable('1), .out(EX_read_data_1), .clock(clock), .reset(reset));
+register #(XLEN) ID_data_0_EX (.in(ID_data_0), .write_enable('1), .out(EX_data_0), .clock(clock), .reset(reset));
+register #(XLEN) ID_data_1_EX (.in(ID_data_1), .write_enable('1), .out(EX_data_1), .clock(clock), .reset(reset));
 register #(XLEN) ID_immediate_out_EX (.in(ID_immediate_out), .write_enable('1), .out(EX_immediate_out), .clock(clock), .reset(reset));
 register #(1) ID_mem_write_enable_EX (.in(ID_mem_write_enable), .write_enable('1), .out(EX_mem_write_enable), .clock(clock), .reset(reset));
 register #(1) ID_reg_write_enable_EX (.in(ID_reg_write_enable), .write_enable('1), .out(EX_reg_write_enable), .clock(clock), .reset(reset));
@@ -154,31 +176,10 @@ register #(1) ID_mem_to_reg_EX (.in(ID_mem_to_reg), .write_enable('1), .out(EX_m
 register #(1) ID_alu_src_EX (.in(ID_alu_src), .write_enable('1), .out(EX_alu_src), .clock(clock), .reset(reset));
 register #(4) ID_alu_op_EX (.in(ID_alu_op), .write_enable('1), .out(EX_alu_op), .clock(clock), .reset(reset));
 
-// -- Determine alu source ------------------------------------
-wire [FORWARDING_CODE_SIZE-1:0] EX_forward_0, EX_forward_1;
-reg [XLEN-1:0] EX_alu_in_0;
-reg [XLEN-1:0] EX_alu_in_1;
-wire [XLEN-1:0] MEM_alu_out;
-always @(*) begin
-    case (EX_forward_0)
-        REG_FILE: EX_alu_in_0 <= EX_read_data_0;
-        ALU_RESULT: EX_alu_in_0 <= MEM_alu_out;
-        MEMORY: EX_alu_in_0 <= WB_reg_data_in;
-        default: EX_alu_in_0 <= EX_read_data_0;
-    endcase
-    case (EX_forward_1)
-        REG_FILE: EX_alu_in_1 <= EX_read_data_1;
-        ALU_RESULT: EX_alu_in_1 <= MEM_alu_out;
-        MEMORY: EX_alu_in_1 <= WB_reg_data_in;
-        default: EX_alu_in_1 <= EX_read_data_1;
-    endcase
-end
-
 // -- Arithmetic logic unit -----------------------------------
-wire [XLEN-1:0] EX_alu_out;
 alu ALU(
-    .in_0(EX_alu_in_0),
-    .in_1((EX_alu_src) ? EX_immediate_out : EX_alu_in_1),
+    .in_0(EX_data_0),
+    .in_1((EX_alu_src) ? EX_immediate_out : EX_data_1),
     .operation(EX_alu_op),
     .out(EX_alu_out)
 );
@@ -187,13 +188,12 @@ alu ALU(
 // -- Memory access stage ---------------------------------------------------------------------------------------------------
 // Wire defs ------------------
 wire [31:0] MEM_instruction;
-wire [XLEN-1:0] MEM_mem_data;
 wire MEM_mem_write_enable, MEM_reg_write_enable, MEM_mem_to_reg;
 
 // -- Pipeline reg EX -> MEM ----------------------------------
 register #(32) EX_instruction_MEM (.in(EX_instruction), .write_enable('1), .out(MEM_instruction), .clock(clock), .reset(reset));
 register #(XLEN) EX_alu_out_MEM (.in(EX_alu_out), .write_enable('1), .out(MEM_alu_out), .clock(clock), .reset(reset));
-register #(XLEN) EX_mem_data_MEM (.in(EX_alu_in_1), .write_enable('1), .out(MEM_mem_data), .clock(clock), .reset(reset));   // Alu in 1 -> mem data!
+register #(XLEN) EX_mem_data_MEM (.in(EX_data_1), .write_enable('1), .out(MEM_mem_data), .clock(clock), .reset(reset));   // Alu in 1 -> mem data!
 register #(1) EX_mem_write_enable_MEM (.in(EX_mem_write_enable), .write_enable('1), .out(MEM_mem_write_enable), .clock(clock), .reset(reset));
 register #(1) EX_reg_write_enable_MEM (.in(EX_reg_write_enable), .write_enable('1), .out(MEM_reg_write_enable), .clock(clock), .reset(reset));
 register #(1) EX_mem_to_reg_MEM (.in(EX_mem_to_reg), .write_enable('1), .out(MEM_mem_to_reg), .clock(clock), .reset(reset));
@@ -230,14 +230,14 @@ assign WB_reg_data_in = (WB_mem_to_reg) ? WB_data_mem_out : WB_alu_out;
 
 // -- Forwarding unit -----------------------------------------
 forwarding_unit FORWARDING_UNIT (
-    .MEM_reg_write_enable(MEM_reg_write_enable),
-    .WB_reg_write_enable(WB_reg_write_enable),
-    .MEM_destination_register(MEM_instruction[11:7]),
-    .WB_destination_register(WB_instruction[11:7]),
-    .EX_read_register_0(EX_instruction[19:15]),
-    .EX_read_register_1(EX_instruction[24:20]),
-    .forward_0(EX_forward_0),
-    .forward_1(EX_forward_1)
+    .ID_instruction(ID_instruction),             // input -> instruction in the instruction decode stage
+    .EX_reg_write_enable(EX_reg_write_enable),   // input -> "reg_write_enable" from execution stage
+    .EX_instruction(EX_instruction),             // input -> instruction in the execution stage
+    .MEM_reg_write_enable(MEM_reg_write_enable), // input -> "reg_write_enable" from memory access stage
+    .MEM_instruction(MEM_instruction),           // input -> instruction in the memory access stage
+    .MEM_mem_to_reg(MEM_mem_to_reg),             // input -> "mem_to_reg" from the memory access stage
+    .forward_mode_0(forward_mode_0),             // output -> forwarding mode for data 0 
+    .forward_mode_1(forward_mode_1)              // output -> forwarding mode for data 1 
 );
 
 // -- Hazard detection unit -----------------------------------
