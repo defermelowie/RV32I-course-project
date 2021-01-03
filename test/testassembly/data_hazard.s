@@ -7,5 +7,8 @@ nop
 nop
 
 sw t0, 0(sp)
+nop
+nop
+nop
 lw t3, 0(sp)    # Load hazard -> must stall
 add t3, t1, t3
