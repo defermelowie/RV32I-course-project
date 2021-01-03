@@ -24,7 +24,6 @@ nop
 li t0, 5
 nop
 li t1, 5    # Data in EX stage
-nop
 beq t0, t1, branch_3
 li t3, 3
 branch_3:
@@ -33,7 +32,6 @@ nop
 # Control hazard: MEM stage
 li t0, 7
 li t1, 7    # Data in MEM stage
-nop
 nop
 beq t0, t1, branch_4
 li t3, 3
