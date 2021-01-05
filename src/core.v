@@ -40,6 +40,7 @@ end
 wire [XLEN-1:0] IF_instruction;
 instruction_memory INSTRUCTION_MEMORY(
     .address(IF_pc_in >> 2), // pc in instead of pc out because address has an input register
+    .addressstall_a(stall),
 	.clock(clock),  
 	.data(32'b0),       // Set to zero since write is never used
 	.wren(1'b0),        // Never write to instruction mem (is initialized)  
