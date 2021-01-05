@@ -21,7 +21,7 @@ output [31:0] q;
 reg wren_reg;
 reg [9:0] address_reg;
 reg [31:0] data_reg;
-reg [31:0] mem [1024:0];
+reg [31:0] mem [1023:0];
 
 // -- Process to control input registers ----------------------
 always @(posedge clock) begin
