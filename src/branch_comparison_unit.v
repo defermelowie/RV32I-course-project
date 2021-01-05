@@ -15,7 +15,7 @@ input wire [2:0] mode;
 output reg branch;
 
 // -- Internal signals ----------------------------------------
-wire signed in_0_signed, in_1_signed;
+wire signed [XLEN-1:0] in_0_signed, in_1_signed;
 assign in_0_signed = in_0;
 assign in_1_signed = in_1;
 

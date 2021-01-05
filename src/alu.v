@@ -22,6 +22,7 @@ assign in_1_signed = in_1;
 
 // -- Calculate output based on operation code ----------------
 always @(*) begin
+	 out_signed <= 0;
     case (operation)
         ALU_ADD: out <= in_0 + in_1;
         ALU_SUB: out <= in_0 - in_1;
