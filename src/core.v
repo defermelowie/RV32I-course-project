@@ -13,8 +13,8 @@ module core (
 
 // -- Module IO -----------------------------------------------
 input clock, reset;
-input [10:0] io_input_bus;  // TODO
-output [10:0] io_output_bus; // TODO
+input [10:0] io_input_bus;  // TODO set correct size
+output [10:0] io_output_bus; // TODO set correct size
 
 
 // Pipeline independent wires ---------------------------------
@@ -202,11 +202,14 @@ register #(1) EX_mem_to_reg_MEM (.in(EX_mem_to_reg), .write_enable('1), .out(MEM
 
 // -- Data memory ---------------------------------------------
 data_memory DATA_MEMORY(
-	.address(EX_alu_out[8:0]),   // EX instead of MEM since memory has input registers
+	.address(EX_alu_out[9:0]),   // EX instead of MEM since memory has input registers
+    .byteena(4'b0),              // TODO set byte enable based on instruction (lw, lb, lh)
 	.clock(clock),  
 	.data(EX_data_1),            // EX instead of MEM since memory has input registers
     .wren(EX_mem_write_enable),  // EX instead of MEM since memory has input registers
-	.q(MEM_mem_data_out)
+	.q(MEM_mem_data_out),
+    .io_input_bus(io_input_bus),
+    .io_output_bus(io_output_bus)
 );
 
 

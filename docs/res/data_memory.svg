@@ -23,9 +23,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.70000001"
-     inkscape:cx="760.84883"
-     inkscape:cy="539.53976"
+     inkscape:zoom="0.98994951"
+     inkscape:cx="623.86542"
+     inkscape:cy="416.46142"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
@@ -53,7 +53,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -465,7 +465,7 @@
          id="tspan1269"
          x="-149.30061"
          y="128.13393"
-         style="font-size:3.52778px;stroke-width:0.264583">read_GPIO_registers</tspan></text>
+         style="font-size:3.52778px;stroke-width:0.264583">read_GPIO_register</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:0.499999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 172.58541,80.366047 h 23.41784"
@@ -516,7 +516,7 @@
          id="tspan1269-6"
          x="-149.69232"
          y="167.44345"
-         style="font-size:3.52777px;stroke-width:0.264583">write_GPIO_registers</tspan></text>
+         style="font-size:3.52777px;stroke-width:0.264583">write_GPIO_register</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:0.499999;stroke-miterlimit:4;stroke-dasharray:none"
        d="m -100.16368,164.79761 h 75.595228 L -25.135416,33.545385 h 8.529612"
@@ -589,5 +589,44 @@
        cx="-264.59683"
        cy="128.88988"
        r="0.75" />
+    <circle
+       id="path939"
+       style="fill:#000000;stroke:none;stroke-width:0.264583"
+       cx="-269.73328"
+       cy="52.01989"
+       r="0.75" />
+    <text
+       xml:space="preserve"
+       style="font-size:3.52777px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="-189.13145"
+       y="127.19618"
+       id="text72-2-5"><tspan
+         sodipodi:role="line"
+         id="tspan70-1-6"
+         x="-189.13145"
+         y="127.19618"
+         style="stroke-width:0.264583">address[9:0]</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:3.52777px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="-195.38675"
+       y="116.75545"
+       id="text1253-7"><tspan
+         sodipodi:role="line"
+         x="-195.38675"
+         y="116.75545"
+         style="stroke-width:0.264583"
+         id="tspan1255-2">GPIO_input_bus</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:3.52777px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
+       x="-188.86418"
+       y="172.89928"
+       id="text72-2-5-1"><tspan
+         sodipodi:role="line"
+         id="tspan70-1-6-7"
+         x="-188.86418"
+         y="172.89928"
+         style="stroke-width:0.264583">address[9:0]</tspan></text>
   </g>
 </svg>
