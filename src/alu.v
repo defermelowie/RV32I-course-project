@@ -2,7 +2,7 @@ module alu (
     in_0,           // input -> first data input of alu
     in_1,           // input -> second data input of alu
     operation,      // input -> specify operation
-    out,            // output -> data output
+    out            // output -> data output
 );
 
 // -- Include definitions -------------------------------------
