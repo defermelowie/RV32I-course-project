@@ -1,0 +1,15 @@
+------------------------------------------
+--   Intel memory initialization file   --
+------------------------------------------
+
+DEPTH = 1024;
+WIDTH = 32;
+ADDRESS_RADIX = HEX;
+DATA_RADIX = HEX;
+
+CONTENT BEGIN
+000 : 00500293;
+001 : 00500313;
+002 : 00530E33;
+003 : 00000013;
+END;
