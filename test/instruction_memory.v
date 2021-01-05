@@ -33,7 +33,7 @@ assign q = mem[address_reg];
 
 // -- Initialize memory ---------------------------------------
 initial begin
-        $readmemh ("../Repo/test/instruction_memory_content.mem", mem);
+        $readmemh ("../Repo/test/testmem/instruction_memory.mem", mem);
     end
 
 endmodule
