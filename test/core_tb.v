@@ -12,8 +12,8 @@ module core_tb;
 // IO
 reg clock;
 reg reset;
-reg [10:0] io_input_bus;    // Not used yet
-wire [10:0] io_output_bus;  // Not used yet
+reg [13:0] io_input_bus;    // Not used yet
+wire [51:0] io_output_bus;  // Not used yet
 
 // Device under test
 core DUT(

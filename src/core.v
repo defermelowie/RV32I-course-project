@@ -166,15 +166,15 @@ wire EX_mem_write_enable, EX_reg_write_enable, EX_mem_to_reg, EX_alu_src;
 wire [3:0] EX_alu_op;
 
 // -- Pipeline reg ID -> EX -----------------------------------
-register #(32) ID_instruction_EX (.in(ID_instruction), .write_enable('b1), .out(EX_instruction), .clock(clock), .reset(reset));
-register #(XLEN) ID_data_0_EX (.in(ID_data_0), .write_enable('b1), .out(EX_data_0), .clock(clock), .reset(reset));
-register #(XLEN) ID_data_1_EX (.in(ID_data_1), .write_enable('b1), .out(EX_data_1), .clock(clock), .reset(reset));
-register #(XLEN) ID_immediate_out_EX (.in(ID_immediate_out), .write_enable('b1), .out(EX_immediate_out), .clock(clock), .reset(reset));
-register #(1) ID_mem_write_enable_EX (.in(ID_mem_write_enable), .write_enable('b1), .out(EX_mem_write_enable), .clock(clock), .reset(reset));
-register #(1) ID_reg_write_enable_EX (.in(ID_reg_write_enable), .write_enable('b1), .out(EX_reg_write_enable), .clock(clock), .reset(reset));
-register #(1) ID_mem_to_reg_EX (.in(ID_mem_to_reg), .write_enable('b1), .out(EX_mem_to_reg), .clock(clock), .reset(reset));
-register #(1) ID_alu_src_EX (.in(ID_alu_src), .write_enable('b1), .out(EX_alu_src), .clock(clock), .reset(reset));
-register #(4) ID_alu_op_EX (.in(ID_alu_op), .write_enable('b1), .out(EX_alu_op), .clock(clock), .reset(reset));
+register #(32) ID_instruction_EX (.in(ID_instruction), .write_enable(1'b1), .out(EX_instruction), .clock(clock), .reset(reset));
+register #(XLEN) ID_data_0_EX (.in(ID_data_0), .write_enable(1'b1), .out(EX_data_0), .clock(clock), .reset(reset));
+register #(XLEN) ID_data_1_EX (.in(ID_data_1), .write_enable(1'b1), .out(EX_data_1), .clock(clock), .reset(reset));
+register #(XLEN) ID_immediate_out_EX (.in(ID_immediate_out), .write_enable(1'b1), .out(EX_immediate_out), .clock(clock), .reset(reset));
+register #(1) ID_mem_write_enable_EX (.in(ID_mem_write_enable), .write_enable(1'b1), .out(EX_mem_write_enable), .clock(clock), .reset(reset));
+register #(1) ID_reg_write_enable_EX (.in(ID_reg_write_enable), .write_enable(1'b1), .out(EX_reg_write_enable), .clock(clock), .reset(reset));
+register #(1) ID_mem_to_reg_EX (.in(ID_mem_to_reg), .write_enable(1'b1), .out(EX_mem_to_reg), .clock(clock), .reset(reset));
+register #(1) ID_alu_src_EX (.in(ID_alu_src), .write_enable(1'b1), .out(EX_alu_src), .clock(clock), .reset(reset));
+register #(4) ID_alu_op_EX (.in(ID_alu_op), .write_enable(1'b1), .out(EX_alu_op), .clock(clock), .reset(reset));
 
 // -- Arithmetic logic unit -----------------------------------
 alu ALU(
@@ -192,12 +192,12 @@ wire MEM_mem_write_enable, MEM_reg_write_enable, MEM_mem_to_reg;
 wire [XLEN-1:0] MEM_mem_data_in;
 
 // -- Pipeline reg EX -> MEM ----------------------------------
-register #(32) EX_instruction_MEM (.in(EX_instruction), .write_enable('b1), .out(MEM_instruction), .clock(clock), .reset(reset));
-register #(XLEN) EX_alu_out_MEM (.in(EX_alu_out), .write_enable('b1), .out(MEM_alu_out), .clock(clock), .reset(reset));
-register #(XLEN) EX_mem_data_in_MEM (.in(EX_data_1), .write_enable('b1), .out(MEM_mem_data_in), .clock(clock), .reset(reset));   // Alu in 1 -> mem data!
-register #(1) EX_mem_write_enable_MEM (.in(EX_mem_write_enable), .write_enable('b1), .out(MEM_mem_write_enable), .clock(clock), .reset(reset));
-register #(1) EX_reg_write_enable_MEM (.in(EX_reg_write_enable), .write_enable('b1), .out(MEM_reg_write_enable), .clock(clock), .reset(reset));
-register #(1) EX_mem_to_reg_MEM (.in(EX_mem_to_reg), .write_enable('b1), .out(MEM_mem_to_reg), .clock(clock), .reset(reset));
+register #(32) EX_instruction_MEM (.in(EX_instruction), .write_enable(1'b1), .out(MEM_instruction), .clock(clock), .reset(reset));
+register #(XLEN) EX_alu_out_MEM (.in(EX_alu_out), .write_enable(1'b1), .out(MEM_alu_out), .clock(clock), .reset(reset));
+register #(XLEN) EX_mem_data_in_MEM (.in(EX_data_1), .write_enable(1'b1), .out(MEM_mem_data_in), .clock(clock), .reset(reset));   // Alu in 1 -> mem data!
+register #(1) EX_mem_write_enable_MEM (.in(EX_mem_write_enable), .write_enable(1'b1), .out(MEM_mem_write_enable), .clock(clock), .reset(reset));
+register #(1) EX_reg_write_enable_MEM (.in(EX_reg_write_enable), .write_enable(1'b1), .out(MEM_reg_write_enable), .clock(clock), .reset(reset));
+register #(1) EX_mem_to_reg_MEM (.in(EX_mem_to_reg), .write_enable(1'b1), .out(MEM_mem_to_reg), .clock(clock), .reset(reset));
 
 
 // -- Data memory ---------------------------------------------
@@ -219,11 +219,11 @@ wire WB_mem_to_reg;
 wire [XLEN-1:0] WB_mem_data_out, WB_alu_out;
 
 // -- Pipeline reg MEM -> WB ----------------------------------
-register #(32) MEM_instruction_WB (.in(MEM_instruction), .write_enable('b1), .out(WB_instruction), .clock(clock), .reset(reset));
-register #(XLEN) MEM_mem_data_out_WB (.in(MEM_mem_data_out), .write_enable('b1), .out(WB_mem_data_out), .clock(clock), .reset(reset));
-register #(XLEN) MEM_alu_out_WB (.in(MEM_alu_out), .write_enable('b1), .out(WB_alu_out), .clock(clock), .reset(reset));
-register #(1) MEM_reg_write_enable_WB (.in(MEM_reg_write_enable), .write_enable('b1), .out(WB_reg_write_enable), .clock(clock), .reset(reset));
-register #(1) MEM_mem_to_reg_WB (.in(MEM_mem_to_reg), .write_enable('b1), .out(WB_mem_to_reg), .clock(clock), .reset(reset));
+register #(32) MEM_instruction_WB (.in(MEM_instruction), .write_enable(1'b1), .out(WB_instruction), .clock(clock), .reset(reset));
+register #(XLEN) MEM_mem_data_out_WB (.in(MEM_mem_data_out), .write_enable(1'b1), .out(WB_mem_data_out), .clock(clock), .reset(reset));
+register #(XLEN) MEM_alu_out_WB (.in(MEM_alu_out), .write_enable(1'b1), .out(WB_alu_out), .clock(clock), .reset(reset));
+register #(1) MEM_reg_write_enable_WB (.in(MEM_reg_write_enable), .write_enable(1'b1), .out(WB_reg_write_enable), .clock(clock), .reset(reset));
+register #(1) MEM_mem_to_reg_WB (.in(MEM_mem_to_reg), .write_enable(1'b1), .out(WB_mem_to_reg), .clock(clock), .reset(reset));
 
 // Determine registerfile data source ----------------------------------
 assign WB_reg_data_in = (WB_mem_to_reg) ? WB_mem_data_out : WB_alu_out;
