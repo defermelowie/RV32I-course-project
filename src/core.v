@@ -18,7 +18,7 @@ output [51:0] io_output_bus;    // |51 HEX5 45|44 HEX4 38|37 HEX3 31|30 HEX2 24|
 
 
 // Pipeline independent wires ---------------------------------
-wire stale;
+wire stall;
 wire [8:0] pc_branch_address;
 wire branch_enable;
 
@@ -50,7 +50,7 @@ instruction_memory INSTRUCTION_MEMORY(
 // Needed since the signal after the input register of "INSTRUCTION_MEMORY" is inaccessible
 register #(9) PC(
     .in(IF_pc_in),
-    .write_enable(!stale),
+    .write_enable(!stall),
     .out(IF_pc_out),
     .clock(clock),
     .reset(reset)
@@ -65,14 +65,14 @@ wire [8:0] ID_pc_out;
 // -- Pipeline reg IF -> ID -----------------------------------
 register #(32) IF_instruction_ID (
     .in(IF_instruction), 
-    .write_enable(!stale), 
+    .write_enable(!stall), 
     .out(ID_instruction), 
     .clock(clock), 
     .reset(reset || branch_enable)   // Flush IF registers when taking branch
 );
 register #(9) IF_pc_out_ID (
     .in(IF_pc_out), 
-    .write_enable(!stale), 
+    .write_enable(!stall), 
     .out(ID_pc_out), 
     .clock(clock), 
     .reset(reset || branch_enable)  // Flush IF registers when taking branch
@@ -84,7 +84,7 @@ wire [2:0] ID_branch_mode;
 wire [3:0] ID_alu_op;
 control CONTROL(
     .instruction(ID_instruction),  
-    .stale(stale), 
+    .stall(stall), 
     .branch_enable(ID_branch_inst),   
     .branch_mode(ID_branch_mode), 
     .mem_write_enable(ID_mem_write_enable),   
@@ -249,7 +249,7 @@ hazard_detection_unit HAZARD_DETECTION_UNIT (
     .EX_destination_register(EX_instruction[11:7]),
     .ID_read_register_0(ID_instruction[19:15]),
     .ID_read_register_1(ID_instruction[24:20]),
-    .stale(stale)
+    .stall(stall)
 );
 
 endmodule

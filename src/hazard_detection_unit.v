@@ -3,7 +3,7 @@ module hazard_detection_unit (
     EX_destination_register,    // input -> destination register from execution stage
     ID_read_register_0,         // input -> read register 0 from instruction decode stage
     ID_read_register_1,         // input -> read register 1 from instruction decode stage
-    stale                       // output -> high if processor must stale
+    stall                       // output -> high if processor must stall
 );
 
 // -- Include definitions -------------------------------------
@@ -13,7 +13,7 @@ input EX_mem_to_reg;
 input [4:0] EX_destination_register;
 input [4:0] ID_read_register_0;
 input [4:0] ID_read_register_1;
-output stale;
+output stall;
 
 // -- Determine hazard ----------------------------------------
 wire data_hazard = (
@@ -25,6 +25,6 @@ wire data_hazard = (
 );
 
 // -- Set signals ---------------------------------------------
-assign stale = data_hazard;
+assign stall = data_hazard;
 
 endmodule

@@ -1,6 +1,6 @@
 module control (
     instruction,        // input -> full instruction
-    stale,              // input -> high if processor must stale
+    stall,              // input -> high if processor must stall
     branch_enable,      // output -> high for branch instructions
     branch_mode,        // output -> branch comparison mode (definitions in comparison_codes.h))
     mem_write_enable,   // output -> high enables write to data memory
@@ -18,7 +18,7 @@ module control (
 
 // -- Module IO -------------------------------------------
 input [31:0] instruction;
-input stale;
+input stall;
 output reg branch_enable, mem_write_enable, reg_write_enable, mem_to_reg, alu_src, ill_instr;
 output reg [2:0] branch_mode;
 output reg [3:0] alu_op;
@@ -97,7 +97,7 @@ always @(*) begin
     alu_src <= 0;
 	alu_op <= 'b0;
     ill_instr <= 0;
-    if (!stale) begin // If stale: set all signals to 0
+    if (!stall) begin // If stall: set all signals to 0
         // Set signal if needed for instruction
         case (1'b1)
             lui_inst: begin alu_op <= ALU_PASS_1; alu_src <= 1; reg_write_enable <= 1; end
