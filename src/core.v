@@ -13,8 +13,8 @@ module core (
 
 // -- Module IO -----------------------------------------------
 input clock, reset;
-input [10:0] io_input_bus;  // TODO set correct size
-output [10:0] io_output_bus; // TODO set correct size
+input [13:0] io_input_bus;      // |13 KEY 10|9 SW 0|
+output [51:0] io_output_bus;    // |51 HEX5 45|44 HEX4 38|37 HEX3 31|30 HEX2 24|23 HEX1 17|16 HEX0 10|9 LED 0|
 
 
 // Pipeline independent wires ---------------------------------

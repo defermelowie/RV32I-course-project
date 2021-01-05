@@ -16,8 +16,8 @@ input clock;
 input [31:0] data;
 input wren;
 output [31:0] q;
-input [10:0] io_input_bus;  // TODO set correct size
-output [10:0] io_output_bus; // TODO set correct size
+input [13:0] io_input_bus;
+output [51:0] io_output_bus;
 
 // -- Internal signals ----------------------------------------
 wire [31:0] mem_out;
