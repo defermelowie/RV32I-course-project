@@ -115,6 +115,12 @@ initial begin
     in_0 <= -1;
     in_1 <= 37;
     #1 `assert(out, 'hFFFFFFFF)
+    in_0 <= -1;
+    in_1 <= 32;
+    #1 `assert(out, 'hFFFFFFFF)
+    in_0 <= 'h7FFFFFFF;
+    in_1 <= 30;
+    #1 `assert(out, 'h1)
     $display("TEST DONE: asr");
 
     $display("START TEST: slt");

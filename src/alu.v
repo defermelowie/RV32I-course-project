@@ -15,14 +15,10 @@ input [3:0] operation;
 output reg [XLEN-1:0] out;
 
 // -- Internal signals ----------------------------------------
-wire signed [XLEN-1:0] in_0_signed, in_1_signed;    // Must be signed in order for right shift arithmetic (>>>) and set less than to work
-reg signed [XLEN-1:0] out_signed;                  // Must be signed in order for right shift arithmetic (>>>) and set less than to work
-assign in_0_signed = in_0;
-assign in_1_signed = in_1;
+wire [2*XLEN-1:0] in_0_extended = {{XLEN{in_0[XLEN-1]}},in_0};
 
 // -- Calculate output based on operation code ----------------
 always @(*) begin
-	 out_signed <= 0;
     case (operation)
         ALU_ADD: out <= in_0 + in_1;
         ALU_SUB: out <= in_0 - in_1;
@@ -32,15 +28,23 @@ always @(*) begin
         ALU_LSR: out <= in_0 >> in_1;
         ALU_LSL: out <= in_0 << in_1;
         ALU_ASR: begin
-            out_signed <= in_0_signed >>> in_1_signed;
-            out <= out_signed;
-        end 
+            if (in_1 > XLEN)
+                out <= {XLEN{in_0[XLEN-1]}};
+            else
+                out <= in_0_extended >> in_1;
+        end
         ALU_PASS_1: out <= in_1;
         ALU_LT: begin
-            out_signed <= (in_0_signed < in_1_signed)? 1 : 0;
-            out <= out_signed;
+            if (in_0[XLEN-1] && in_1[XLEN-1])           // Both are negative
+                out <= (in_0 < in_1);
+            else if (!in_0[XLEN-1] && in_1[XLEN-1])     // in_0 is positive and in_1 is negative
+                out <= 0;
+            else if (in_0[XLEN-1] && !in_1[XLEN-1])     // in_0 is negative and in_1 is positive
+                out <= 1;
+            else                                        // Both are positive
+                out <= (in_0 < in_1);
         end
-        ALU_LTU: out <= (in_0 < in_1)? 1 : 0;
+        ALU_LTU: out <= (in_0 < in_1) ? 1 : 0;
         default: out <= {XLEN{1'b0}};   // Return zero in case of unknown operation code
     endcase
 end
