@@ -31,7 +31,7 @@ initial begin
     // Set to known state
     reset <= 1;
     clock <= 0;
-    #10 reset <= 0;
+    #15 reset <= 0;
 
     // Stop after t/10 clock cycles
     #400 $stop();
