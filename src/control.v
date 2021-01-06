@@ -8,6 +8,9 @@ module control (
     mem_to_reg,         // output -> high routes data memory output to register input
     alu_op,             // output -> ALU operating mode (definitions in alu_codes.h)
     alu_src,            // output -> high: alu input = immediate, low: alu input = register file
+    pc_to_reg,          // output -> high: writes pc + 4 to destination reg
+    jump_enable,        // output -> high for jump instructions
+    jump_reg,           // output -> high: set pc to reg content
     ill_instr           // output -> high if instruction is not recognized
 );
 
@@ -19,7 +22,7 @@ module control (
 // -- Module IO -------------------------------------------
 input [31:0] instruction;
 input stall;
-output reg branch_enable, mem_write_enable, reg_write_enable, mem_to_reg, alu_src, ill_instr;
+output reg branch_enable, jump_enable, mem_write_enable, reg_write_enable, mem_to_reg, alu_src, pc_to_reg, jump_reg, ill_instr;
 output reg [2:0] branch_mode;
 output reg [3:0] alu_op;
 
@@ -96,14 +99,17 @@ always @(*) begin
     mem_to_reg <= 0;
     alu_src <= 0;
 	alu_op <= 'b0;
+    pc_to_reg <= 0;
+    jump_enable <= 0;
+    jump_reg <= 0;
     ill_instr <= 0;
     if (!stall) begin // If stall: set all signals to 0
         // Set signal if needed for instruction
         case (1'b1)
             lui_inst: begin alu_op <= ALU_PASS_1; alu_src <= 1; reg_write_enable <= 1; end
             //auipc_inst: TODO
-            //jal_inst: TODO
-            //jalr_inst: TODO
+            jal_inst: begin alu_op <= ALU_PASS_1; reg_write_enable <= 1; pc_to_reg <= 1; jump_enable <= 1; end
+            jalr_inst: begin alu_op <= ALU_PASS_1; reg_write_enable <= 1; pc_to_reg <= 1; jump_enable <= 1; jump_reg <= 1; end
             // Branch group
             beq_inst: begin branch_enable <= 1; branch_mode <= EQ; end
             bne_inst: begin branch_enable <= 1; branch_mode <= NE; end
@@ -118,7 +124,7 @@ always @(*) begin
             //ld_inst: TODO
             //lbu_inst: TODO
             //lhu_inst: TODO
-            //lwu_inst: TODO
+            //lwu_inst: begin alu_op <= ALU_ADD; alu_src <= 1; reg_write_enable <= 1; mem_to_reg <= 1; end // TODO
             // Store group
             //sb_inst: TODO
             //sh_inst: TODO
