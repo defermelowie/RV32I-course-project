@@ -17,15 +17,14 @@ input [31:0] data;
 input wren;
 output [31:0] q;
 input [13:0] io_input_bus;
-output [51:0] io_output_bus;
+output reg [51:0] io_output_bus;
 
 // -- Internal signals ----------------------------------------
 wire [31:0] mem_out;
-wire [31:0] io_out;
-wire io_address;
+reg [31:0] io_out;
 
 // -- Chose between io out or mem out -------------------------
-assign q = (io_address) ? io_out : mem_out;
+assign q = (address[10]) ? io_out : mem_out;
 
 // -- Memory block --------------------------------------------
 data_memory_ip_block DATA_MEMORY_IP_BLOCK(
@@ -33,20 +32,47 @@ data_memory_ip_block DATA_MEMORY_IP_BLOCK(
     .byteena(byteena),              // has input register !
 	.clock(clock),                  // has input register !
 	.data(data),                    // has input register !
-    .wren(wren && !io_address),     // has input register !
+    .wren(wren && !address[11]),     // has input register !
 	.q(mem_out)
 );
 
-// -- Determine if address is IO address ----------------------
-// TODO
-assign io_address = 0;  // temporarily for testing
 
 // -- Write io registers --------------------------------------
 // Must have input registers!
 // TODO
+always @(posedge clock)
+begin
+	if (address[11])
+	begin
+		case (address[2:0])
+		3'b000: io_output_bus[9:0] <= data[9:0];
+		3'b001: io_output_bus[16:10] <= data[6:0];
+		3'b010: io_output_bus[23:17] <= data[6:0];
+		3'b011: io_output_bus[30:24] <= data[6:0];
+		3'b100: io_output_bus[37:31] <= data[6:0];
+		3'b101: io_output_bus[44:38] <= data[6:0];
+		3'b110: io_output_bus[51:45] <= data[6:0];
+		default: io_out <= {32{1'b0}};
+		endcase
+	end
+end
 
 // -- Read io registers ---------------------------------------
 // Must have input register for address signal!
 // TODO
+always @(posedge clock)
+begin
+	if (address[10])
+	begin
+		case (address[2:0])
+		3'b000: io_out <= {{22{1'b0}}, io_input_bus[9:0]};
+		3'b001: io_out <= {{31{1'b0}}, io_input_bus[10]};
+		3'b010: io_out <= {{31{1'b0}}, io_input_bus[11]};
+		3'b011: io_out <= {{31{1'b0}}, io_input_bus[12]};
+		3'b100: io_out <= {{31{1'b0}}, io_input_bus[13]};
+		default: io_out <= {32{1'b0}};
+		endcase
+	end
+end
 
 endmodule
