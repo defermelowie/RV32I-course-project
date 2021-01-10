@@ -10,7 +10,7 @@ module data_memory (
 );
 
 // -- Module IO -----------------------------------------------
-input [9:0] address;        // 2^10 words
+input [11:0] address;        // 2^10 words + gpio addresses
 input [3:0] byteena;
 input clock;
 input [31:0] data;
