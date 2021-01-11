@@ -23,14 +23,16 @@ output reg [51:0] io_output_bus;
 wire [31:0] mem_out;
 reg [31:0] io_out;
 
-// -- Chose between io out or mem out -------------------------
-assign q = (address[10]) ? io_out : mem_out;
-
 // -- registers for address and data
 wire [11:0] address_register;
 register #(12) address_register_data_memory (.in(address), .write_enable(1'b1), .out(address_register), .clock(clock), .reset(1'b0));
 wire [31:0] data_register;
 register #(32) data_register_data_memory (.in(data), .write_enable(1'b1), .out(data_register), .clock(clock), .reset(1'b0));
+wire wren_register;
+register #(1) wren_register_data_memory (.in(wren), .write_enable(1'b1), .out(wren_register), .clock(clock), .reset(1'b0));
+
+// -- Chose between io out or mem out -------------------------
+assign q = (address_register[10]) ? io_out : mem_out;
 
 // -- Memory block --------------------------------------------
 data_memory_ip_block DATA_MEMORY_IP_BLOCK(
@@ -48,7 +50,7 @@ data_memory_ip_block DATA_MEMORY_IP_BLOCK(
 // TODO
 always @(posedge clock)
 begin
-	if (address_register[11])
+	if (address_register[11] && wren_register)
 	begin
 		case (address_register[2:0] )
 		3'b000: io_output_bus[9:0] <= data_register[9:0];
