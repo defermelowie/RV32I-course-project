@@ -47,7 +47,6 @@ data_memory_ip_block DATA_MEMORY_IP_BLOCK(
 
 // -- Write io registers --------------------------------------
 // Must have input registers!
-// TODO
 always @(posedge clock)
 begin
 	if (address_register[11] && wren_register)
@@ -67,8 +66,7 @@ end
 
 // -- Read io registers ---------------------------------------
 // Must have input register for address signal!
-// TODO
-always @(posedge clock)
+always @(*)
 begin
 	if (address_register[10])
 	begin
