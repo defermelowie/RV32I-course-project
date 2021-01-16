@@ -206,8 +206,8 @@ end
 
 // -- Arithmetic logic unit -----------------------------------
 alu ALU(
-    .in_0(EX_data_0),
-    .in_1((EX_alu_src) ? EX_immediate_out : EX_data_1),
+    .in_0(EX_alu_in_0),
+    .in_1(EX_alu_in_1),
     .operation(EX_alu_op),
     .out(EX_alu_out)
 );
