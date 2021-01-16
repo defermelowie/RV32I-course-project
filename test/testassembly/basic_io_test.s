@@ -2,7 +2,7 @@
     # Set registers
     addi t0, zero, 0x00000003
     addi t1, zero, 0x00000005
-    addi t5, zero, 0x00000060 # use as io base address
+    li t5, 0x00000c00 # use as io base address
     addi t6, zero, 0x00000015 # use as data segment address
     addi s0, zero, 0x00000000 # skip delay loops if set to 0
 
