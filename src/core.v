@@ -80,7 +80,15 @@ register #(9) IF_pc_out_ID (
 );
 
 // -- Control -------------------------------------------------
-wire ID_branch_inst, ID_mem_write_enable, ID_reg_write_enable, ID_mem_to_reg, ID_alu_src, ID_ill_instr;   // Control outputs
+wire ID_branch_inst, // Control outputs
+    ID_mem_write_enable, 	
+    ID_reg_write_enable, 	
+    ID_mem_to_reg, 	
+    ID_alu_src, 	
+    ID_pc_to_reg, 	
+    ID_jump_inst, 	
+    ID_jump_reg,	
+    ID_ill_instr;
 wire [2:0] ID_branch_mode;
 wire [3:0] ID_alu_op;
 control CONTROL(
@@ -92,7 +100,10 @@ control CONTROL(
     .reg_write_enable(ID_reg_write_enable),   
     .mem_to_reg(ID_mem_to_reg),         
     .alu_op(ID_alu_op),             
-    .alu_src(ID_alu_src),          
+    .alu_src(ID_alu_src),   
+    .pc_to_reg(ID_pc_to_reg),
+    .jump_enable(ID_jump_inst),
+    .jump_reg(ID_jump_reg),       
     .ill_instr(ID_ill_instr)           
 );
 
@@ -153,18 +164,19 @@ immediate_generator IMMEDIATE_GENERATOR(
 );
 
 // -- Calculate branch address --------------------------------
-assign pc_branch_address = ID_immediate_out + ID_pc_out;
+assign pc_branch_address = (ID_jump_reg) ? ID_read_data_0 : ID_immediate_out + ID_pc_out;
 
 // -- Set branch enable ---------------------------------------
-assign branch_enable = (ID_branch_inst && ID_branch_comp);
+assign branch_enable = (ID_branch_inst && ID_branch_comp) || ID_jump_inst;
 
 
 // -- Execution stage -------------------------------------------------------------------------------------------------------
 // Wire defs ------------------
 wire [31:0] EX_instruction;
 wire [XLEN-1:0] EX_data_0, EX_data_1, EX_immediate_out;
-wire EX_mem_write_enable, EX_reg_write_enable, EX_mem_to_reg, EX_alu_src;
+wire EX_mem_write_enable, EX_reg_write_enable, EX_mem_to_reg, EX_alu_src, EX_pc_to_reg;
 wire [3:0] EX_alu_op;
+wire [8:0] EX_pc;
 
 // -- Pipeline reg ID -> EX -----------------------------------
 register #(32) ID_instruction_EX (.in(ID_instruction), .write_enable(1'b1), .out(EX_instruction), .clock(clock), .reset(reset));
@@ -175,7 +187,22 @@ register #(1) ID_mem_write_enable_EX (.in(ID_mem_write_enable), .write_enable(1'
 register #(1) ID_reg_write_enable_EX (.in(ID_reg_write_enable), .write_enable(1'b1), .out(EX_reg_write_enable), .clock(clock), .reset(reset));
 register #(1) ID_mem_to_reg_EX (.in(ID_mem_to_reg), .write_enable(1'b1), .out(EX_mem_to_reg), .clock(clock), .reset(reset));
 register #(1) ID_alu_src_EX (.in(ID_alu_src), .write_enable(1'b1), .out(EX_alu_src), .clock(clock), .reset(reset));
+register #(1) ID_pc_to_reg_EX (.in(ID_pc_to_reg), .write_enable(1'b1), .out(EX_pc_to_reg), .clock(clock), .reset(reset));
 register #(4) ID_alu_op_EX (.in(ID_alu_op), .write_enable(1'b1), .out(EX_alu_op), .clock(clock), .reset(reset));
+register #(9) ID_pc_EX (.in(ID_pc_out), .write_enable(1'b1), .out(EX_pc), .clock(clock), .reset(reset));
+
+// -- Determine alu inputs ------------------------------------
+reg [XLEN-1:0] EX_alu_in_0, EX_alu_in_1;
+always @(*) begin
+    EX_alu_in_0 <= EX_data_0;
+    if (EX_alu_src)
+        EX_alu_in_1 <= EX_immediate_out;
+    else if (EX_pc_to_reg)
+        EX_alu_in_1 <= EX_pc + 4;   // Save next pc value
+    else
+        EX_alu_in_1 <= EX_data_1;
+end
+
 
 // -- Arithmetic logic unit -----------------------------------
 alu ALU(
@@ -203,14 +230,14 @@ register #(1) EX_mem_to_reg_MEM (.in(EX_mem_to_reg), .write_enable(1'b1), .out(M
 
 // -- Data memory ---------------------------------------------
 data_memory DATA_MEMORY(
-	.address(EX_alu_out[11:0]),   // EX instead of MEM since memory has input registers
-    	.byteena(4'b0),              // TODO set byte enable based on instruction (lw, lb, lh)
+	.address(EX_alu_out[11:0]),  // EX instead of MEM since memory has input registers
+    .byteena(4'b0),              // TODO set byte enable based on instruction (lw, lb, lh)
 	.clock(clock),  
 	.data(EX_data_1),            // EX instead of MEM since memory has input registers
-    	.wren(EX_mem_write_enable),  // EX instead of MEM since memory has input registers
+    .wren(EX_mem_write_enable),  // EX instead of MEM since memory has input registers
 	.q(MEM_mem_data_out),
-    	.io_input_bus(io_input_bus),
-    	.io_output_bus(io_output_bus)
+    .io_input_bus(io_input_bus),
+    .io_output_bus(io_output_bus)
 );
 
 
