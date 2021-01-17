@@ -11,3 +11,6 @@
 |KEY      |SW     |
 |:-------:|:-----:|
 |13 ... 10|9 ... 0|
+
+## Address space
+![Memory map](./res/memory_map.svg)
