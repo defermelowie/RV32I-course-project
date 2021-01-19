@@ -36,7 +36,7 @@ assign q = mem[address_reg];
 
 // -- Initialize memory ---------------------------------------
 initial begin
-        $readmemh ("gpio.hex", mem);
+        $readmemh ("../Repo/test/testmem/instruction_memory.mem", mem);
     end
 
 endmodule
