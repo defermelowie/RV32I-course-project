@@ -5,8 +5,16 @@ loop:
     sw t0, 0(t0)
     sw t0, 0(t2)
     sw t0, 1(t2)
+    jal time_consuming_loop
     addi t0, t0, 1
     bne t0, t1, loop
 exit:
 beq zero, zero, exit
+
+time_consuming_loop:
+    li t3, 0x1000000
+    L1:
+    addi t3, t3, -1
+    bne t3, zero, L1
+    ret
     
