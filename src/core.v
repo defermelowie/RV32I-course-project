@@ -231,7 +231,7 @@ register #(1) EX_mem_to_reg_MEM (.in(EX_mem_to_reg), .write_enable(1'b1), .out(M
 // -- Data memory ---------------------------------------------
 data_memory DATA_MEMORY(
 	.address(EX_alu_out),  // EX instead of MEM since memory has input registers
-    .byteena(4'b0),              // TODO set byte enable based on instruction (lw, lb, lh)
+    .byteena(4'b1),              // TODO set byte enable based on instruction (lw, lb, lh)
 	.clock(clock),  
 	.data(EX_data_1),            // EX instead of MEM since memory has input registers
     .wren(EX_mem_write_enable),  // EX instead of MEM since memory has input registers
