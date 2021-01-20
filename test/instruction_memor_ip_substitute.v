@@ -36,7 +36,7 @@ assign q = mem[address_reg];
 
 // -- Initialize memory ---------------------------------------
 initial begin
-        $readmemh ("../Repo/test/testmem/instruction_memory.mem", mem);
+        $readmemh ("knightrider.hex", mem);
     end
 
 endmodule
