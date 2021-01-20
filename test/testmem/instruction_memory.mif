@@ -8,9 +8,11 @@ ADDRESS_RADIX = HEX;
 DATA_RADIX = HEX;
 
 CONTENT BEGIN
-000 : 00000493; 	-- addi x9 x0 0
-001 : 00F00293; 	-- addi x5 x0 15
-002 : 01400313; 	-- addi x6 x0 20
-003 : 007302B3; 	-- add x5 x6 x7
-004 : 0054A023; 	-- sw x5 0(x9)
+000 : 40000413; 	-- addi x8 x0 1024
+001 : 000014B7; 	-- lui x9 1
+002 : 80048493; 	-- addi x9 x9 -2048
+003 : 00042303; 	-- lw x6 0(x8)
+004 : 0064A023; 	-- sw x6 0(x9)
+005 : 0064A0A3; 	-- sw x6 1(x9)
+006 : FF5FF06F; 	-- jal x0 -12
 END;
