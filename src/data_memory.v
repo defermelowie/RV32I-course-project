@@ -1,17 +1,20 @@
 module data_memory (
 	address,        // input -> address to read/write
-    byteena,        // input -> byte enable [3:0]
+    mem_mode,		// input -> specifies memory mode i.e. byte/halfword/word
 	clock,          // input -> clock
 	data,           // input -> input data
 	wren,           // input -> high enables write
 	q,              // output -> output data
-    io_input_bus,    // input -> input io
+    io_input_bus,   // input -> input io
     io_output_bus   // output -> output io
 );
 
+// -- Include definitions ---------------------------------
+`include "mem_modes.h"          // Contains memory mode definitions
+
 // -- Module IO -----------------------------------------------
 input [31:0] address;        // 32 bit word (alu output)
-input [3:0] byteena;
+input [1:0] mem_mode;
 input clock;
 input [31:0] data;
 input wren;
@@ -21,6 +24,7 @@ output reg [51:0] io_output_bus;
 
 // -- Internal signals ----------------------------------------
 wire [31:0] mem_out;
+reg [3:0] byte_enable;
 reg [31:0] io_out;
 reg [31:0] io_in;
 
@@ -31,40 +35,63 @@ wire [31:0] data_register;
 register #(32) data_register_data_memory (.in(data), .write_enable(1'b1), .out(data_register), .clock(clock), .reset(1'b0));
 wire wren_register;
 register #(1) wren_register_data_memory (.in(wren), .write_enable(1'b1), .out(wren_register), .clock(clock), .reset(1'b0));
+wire [3:0] byte_enable_reg;
+register #(4) byte_enable_reg_data_memory (.in(byte_enable), .write_enable(1'b1), .out(byte_enable_reg), .clock(clock), .reset(1'b0));
+wire [1:0] mem_mode_reg;
+register #(2) mem_mode_reg_data_memory (.in(mem_mode), .write_enable(1'b1), .out(mem_mode_reg), .clock(clock), .reset(1'b0));
+
+// -- Set byte enable according to mode & address -------------
+always @(*) begin
+	if (wren)
+		case (mem_mode)
+			MEM_BYTE: byte_enable <= ('b0001 << address[1:0]);
+			MEM_HALF: byte_enable <= ('b0011 << address[1:0]);	// TODO "Problem" if address[1:0] == 3
+			MEM_WORD: byte_enable <= 'b1111;
+			default: byte_enable <= 'b1111; // Write full words as default
+		endcase
+	else byte_enable <= 'b0000;
+end
 
 // -- Select memory block (for writing) -----------------------
 reg ram_sel, io_in_sel;	// Block select signals
 always @(*) begin
 	ram_sel <= 0;
 	io_in_sel <= 0;
-	if (address[11:10] == 'b00) begin
+	if (address[13:12] == 'b00) begin
 		ram_sel <= 1;
 	end
-	if (address_register[11:10] == 'b10) begin
+	if (address_register[13:12] == 'b10) begin
 		io_in_sel <= 1;
 	end
 end
 
 // -- Select output source ------------------------------------
+reg [31:0] unmasked_q;
 always @(*) begin
-	case (address_register[11:10])
+	case (address_register[13:12])
 		'b00: begin	// Select ram block
-			q <= mem_out;
+			unmasked_q <= mem_out >> (address_register[1:0]*8); // TODO "Problem" if address[1:0] == 3 and mode == MEM_HALF
 		end
 		'b01: begin	// Select block for reading from io
-			q <= io_out;
+			unmasked_q <= io_out >> (address_register[1:0]*8); // TODO "Problem" if address[1:0] == 3 and mode == MEM_HALF
 		end
 		'b10: begin	// Select block for writing to io
-			q <= io_in;
+			unmasked_q <= io_in >> (address_register[1:0]*8); // TODO "Problem" if address[1:0] == 3 and mode == MEM_HALF
 		end
-		default: q <= 0;
+		default: unmasked_q <= 0;
+	endcase
+	case (mem_mode_reg)	// Shift and mask result based on mode
+		MEM_BYTE: q <= {{24{unmasked_q[7]}}, unmasked_q[7:0]};
+		MEM_HALF: q <= {{16{unmasked_q[15]}}, unmasked_q[15:0]};
+		MEM_WORD: q <= unmasked_q;
+		default: q <= unmasked_q;
 	endcase
 end
 
 // -- Memory block --------------------------------------------
 data_memory_ip_block DATA_MEMORY_IP_BLOCK(
-	.address(address[9:0]),         // has input register !
-    .byteena(byteena),              // has input register !
+	.address(address[11:2]),        // has input register !
+    .byteena(byte_enable),          // has input register !
 	.clock(clock),                  // has input register !
 	.data(data),                    // has input register !
     .wren(wren && ram_sel),     	// has input register !
@@ -80,16 +107,16 @@ always @(posedge clock)
 begin
 	if (io_in_sel && wren_register)
 	begin
-		case (address_register[2:0]) // Must have input registers!
-			3'b000: io_registers[0] <= data_register;
-			3'b001: io_registers[1] <= data_register;
+		case (address_register[3:2]) // Must have input registers!
+			3'b00: io_registers[0] <= data_register;
+			3'b01: io_registers[1] <= data_register;
 		endcase
 	end
 end
 // Process for reading from io registers
 always @(posedge clock)
 begin
-	case (address_register[1:0])
+	case (address_register[3:2])
 		'b00: io_in <= io_registers[0];
 		'b01: io_in <= io_registers[1];
 		default: io_in <= {32{1'b0}};
@@ -118,7 +145,7 @@ end
 // Map signals from IO's to io_out based on address
 always @(posedge clock)
 begin
-	case (address_register[2:0]) // Must have input register for address signal!
+	case (address_register[4:2]) // Must have input register for address signal!
 		3'b000: io_out <= {{22{1'b0}}, io_input_bus[9:0]};
 		3'b001: io_out <= {{31{1'b0}}, io_input_bus[10]};
 		3'b010: io_out <= {{31{1'b0}}, io_input_bus[11]};

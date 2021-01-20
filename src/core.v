@@ -89,6 +89,7 @@ wire ID_branch_inst, // Control outputs
     ID_jump_inst, 	
     ID_jump_reg,	
     ID_ill_instr;
+wire [1:0] ID_mem_mode;
 wire [2:0] ID_branch_mode;
 wire [3:0] ID_alu_op;
 control CONTROL(
@@ -96,7 +97,8 @@ control CONTROL(
     .stall(stall), 
     .branch_enable(ID_branch_inst),   
     .branch_mode(ID_branch_mode), 
-    .mem_write_enable(ID_mem_write_enable),   
+    .mem_write_enable(ID_mem_write_enable),
+    .mem_mode(ID_mem_mode),
     .reg_write_enable(ID_reg_write_enable),   
     .mem_to_reg(ID_mem_to_reg),         
     .alu_op(ID_alu_op),             
@@ -175,6 +177,7 @@ assign branch_enable = (ID_branch_inst && ID_branch_comp) || ID_jump_inst;
 wire [31:0] EX_instruction;
 wire [XLEN-1:0] EX_data_0, EX_data_1, EX_immediate_out;
 wire EX_mem_write_enable, EX_reg_write_enable, EX_mem_to_reg, EX_alu_src, EX_pc_to_reg;
+wire [1:0] EX_mem_mode;
 wire [3:0] EX_alu_op;
 wire [8:0] EX_pc;
 
@@ -184,6 +187,7 @@ register #(XLEN) ID_data_0_EX (.in(ID_data_0), .write_enable(1'b1), .out(EX_data
 register #(XLEN) ID_data_1_EX (.in(ID_data_1), .write_enable(1'b1), .out(EX_data_1), .clock(clock), .reset(reset));
 register #(XLEN) ID_immediate_out_EX (.in(ID_immediate_out), .write_enable(1'b1), .out(EX_immediate_out), .clock(clock), .reset(reset));
 register #(1) ID_mem_write_enable_EX (.in(ID_mem_write_enable), .write_enable(1'b1), .out(EX_mem_write_enable), .clock(clock), .reset(reset));
+register #(2) ID_mem_mode_EX (.in(ID_mem_mode), .write_enable(1'b1), .out(EX_mem_mode), .clock(clock), .reset(reset));
 register #(1) ID_reg_write_enable_EX (.in(ID_reg_write_enable), .write_enable(1'b1), .out(EX_reg_write_enable), .clock(clock), .reset(reset));
 register #(1) ID_mem_to_reg_EX (.in(ID_mem_to_reg), .write_enable(1'b1), .out(EX_mem_to_reg), .clock(clock), .reset(reset));
 register #(1) ID_alu_src_EX (.in(ID_alu_src), .write_enable(1'b1), .out(EX_alu_src), .clock(clock), .reset(reset));
@@ -230,8 +234,8 @@ register #(1) EX_mem_to_reg_MEM (.in(EX_mem_to_reg), .write_enable(1'b1), .out(M
 
 // -- Data memory ---------------------------------------------
 data_memory DATA_MEMORY(
-	.address(EX_alu_out),  // EX instead of MEM since memory has input registers
-    .byteena(4'b1),              // TODO set byte enable based on instruction (lw, lb, lh)
+	.address(EX_alu_out),        // EX instead of MEM since memory has input registers
+    .mem_mode(EX_mem_mode),      // EX instead of MEM since memory has input registers
 	.clock(clock),  
 	.data(EX_data_1),            // EX instead of MEM since memory has input registers
     .wren(EX_mem_write_enable),  // EX instead of MEM since memory has input registers
