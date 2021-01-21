@@ -4,6 +4,7 @@ module control (
     branch_enable,      // output -> high for branch instructions
     branch_mode,        // output -> branch comparison mode (definitions in comparison_codes.h))
     mem_write_enable,   // output -> high enables write to data memory
+    mem_unsigned,       // output -> high when unsigned load
     mem_mode,           // output -> specifies memory mode i.e. byte/halfword/word
     reg_write_enable,   // output -> high enables write to registerfile
     mem_to_reg,         // output -> high routes data memory output to register input
@@ -24,7 +25,7 @@ module control (
 // -- Module IO -------------------------------------------
 input [31:0] instruction;
 input stall;
-output reg branch_enable, jump_enable, mem_write_enable, reg_write_enable, mem_to_reg, alu_src, pc_to_reg, jump_reg, ill_instr;
+output reg branch_enable, jump_enable, mem_write_enable, mem_unsigned, reg_write_enable, mem_to_reg, alu_src, pc_to_reg, jump_reg, ill_instr;
 output reg [1:0] mem_mode;
 output reg [2:0] branch_mode;
 output reg [3:0] alu_op;
@@ -100,6 +101,7 @@ always @(*) begin
     mem_write_enable <= 0;
     reg_write_enable <= 0;
     mem_to_reg <= 0;
+    mem_unsigned <= 0;
     mem_mode <= MEM_WORD;
     alu_src <= 0;
 	alu_op <= 'b0;
@@ -125,15 +127,13 @@ always @(*) begin
             lb_inst: begin alu_op <= ALU_ADD; alu_src <= 1; reg_write_enable <= 1; mem_to_reg <= 1; mem_mode <= MEM_BYTE; end
             lh_inst: begin alu_op <= ALU_ADD; alu_src <= 1; reg_write_enable <= 1; mem_to_reg <= 1; mem_mode <= MEM_HALF; end
             lw_inst: begin alu_op <= ALU_ADD; alu_src <= 1; reg_write_enable <= 1; mem_to_reg <= 1; mem_mode <= MEM_WORD; end
-            //ld_inst: -> not on 32 bit arch
-            //lbu_inst: TODO
-            //lhu_inst: TODO
-            //lwu_inst: TODO
+            lbu_inst: begin alu_op <= ALU_ADD; alu_src <= 1; reg_write_enable <= 1; mem_to_reg <= 1; mem_mode <= MEM_BYTE; mem_unsigned <= 1; end
+            lhu_inst: begin alu_op <= ALU_ADD; alu_src <= 1; reg_write_enable <= 1; mem_to_reg <= 1; mem_mode <= MEM_HALF; mem_unsigned <= 1; end
+            lwu_inst: begin alu_op <= ALU_ADD; alu_src <= 1; reg_write_enable <= 1; mem_to_reg <= 1; mem_mode <= MEM_WORD; mem_unsigned <= 1; end
             // Store group
-            //sb_inst: TODO
-            //sh_inst: TODO
+            sb_inst: begin alu_op <= ALU_ADD; alu_src <= 1; mem_write_enable <= 1; mem_mode <= MEM_BYTE; end
+            sh_inst: begin alu_op <= ALU_ADD; alu_src <= 1; mem_write_enable <= 1; mem_mode <= MEM_HALF; end
             sw_inst: begin alu_op <= ALU_ADD; alu_src <= 1; mem_write_enable <= 1; mem_mode <= MEM_WORD; end
-            //sd_inst: -> not on 32 bit arch
             // Arithmetic & logic immediate group
             addi_inst: begin alu_op <= ALU_ADD; alu_src <= 1; reg_write_enable <= 1; end
             slli_inst: begin alu_op <= ALU_LSL; alu_src <= 1; reg_write_enable <= 1; end

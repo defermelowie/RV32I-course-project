@@ -81,7 +81,8 @@ register #(9) IF_pc_out_ID (
 
 // -- Control -------------------------------------------------
 wire ID_branch_inst, // Control outputs
-    ID_mem_write_enable, 	
+    ID_mem_write_enable,
+    ID_mem_unsigned,
     ID_reg_write_enable, 	
     ID_mem_to_reg, 	
     ID_alu_src, 	
@@ -98,6 +99,7 @@ control CONTROL(
     .branch_enable(ID_branch_inst),   
     .branch_mode(ID_branch_mode), 
     .mem_write_enable(ID_mem_write_enable),
+    .mem_unsigned(ID_mem_unsigned),
     .mem_mode(ID_mem_mode),
     .reg_write_enable(ID_reg_write_enable),   
     .mem_to_reg(ID_mem_to_reg),         
@@ -176,7 +178,7 @@ assign branch_enable = (ID_branch_inst && ID_branch_comp) || ID_jump_inst;
 // Wire defs ------------------
 wire [31:0] EX_instruction;
 wire [XLEN-1:0] EX_data_0, EX_data_1, EX_immediate_out;
-wire EX_mem_write_enable, EX_reg_write_enable, EX_mem_to_reg, EX_alu_src, EX_pc_to_reg;
+wire EX_mem_write_enable, EX_mem_unsigned, EX_reg_write_enable, EX_mem_to_reg, EX_alu_src, EX_pc_to_reg;
 wire [1:0] EX_mem_mode;
 wire [3:0] EX_alu_op;
 wire [8:0] EX_pc;
@@ -187,6 +189,7 @@ register #(XLEN) ID_data_0_EX (.in(ID_data_0), .write_enable(1'b1), .out(EX_data
 register #(XLEN) ID_data_1_EX (.in(ID_data_1), .write_enable(1'b1), .out(EX_data_1), .clock(clock), .reset(reset));
 register #(XLEN) ID_immediate_out_EX (.in(ID_immediate_out), .write_enable(1'b1), .out(EX_immediate_out), .clock(clock), .reset(reset));
 register #(1) ID_mem_write_enable_EX (.in(ID_mem_write_enable), .write_enable(1'b1), .out(EX_mem_write_enable), .clock(clock), .reset(reset));
+register #(1) ID_mem_unsigned_EX (.in(ID_mem_unsigned), .write_enable(1'b1), .out(EX_mem_unsigned), .clock(clock), .reset(reset));
 register #(2) ID_mem_mode_EX (.in(ID_mem_mode), .write_enable(1'b1), .out(EX_mem_mode), .clock(clock), .reset(reset));
 register #(1) ID_reg_write_enable_EX (.in(ID_reg_write_enable), .write_enable(1'b1), .out(EX_reg_write_enable), .clock(clock), .reset(reset));
 register #(1) ID_mem_to_reg_EX (.in(ID_mem_to_reg), .write_enable(1'b1), .out(EX_mem_to_reg), .clock(clock), .reset(reset));
@@ -220,7 +223,7 @@ alu ALU(
 // -- Memory access stage ---------------------------------------------------------------------------------------------------
 // Wire defs ------------------
 wire [31:0] MEM_instruction;
-wire MEM_mem_write_enable, MEM_reg_write_enable, MEM_mem_to_reg;
+wire MEM_mem_write_enable, MEM_reg_write_enable, MEM_mem_to_reg, MEM_mem_unsigned;
 wire [XLEN-1:0] MEM_mem_data_in;
 
 // -- Pipeline reg EX -> MEM ----------------------------------
@@ -230,12 +233,14 @@ register #(XLEN) EX_mem_data_in_MEM (.in(EX_data_1), .write_enable(1'b1), .out(M
 register #(1) EX_mem_write_enable_MEM (.in(EX_mem_write_enable), .write_enable(1'b1), .out(MEM_mem_write_enable), .clock(clock), .reset(reset));
 register #(1) EX_reg_write_enable_MEM (.in(EX_reg_write_enable), .write_enable(1'b1), .out(MEM_reg_write_enable), .clock(clock), .reset(reset));
 register #(1) EX_mem_to_reg_MEM (.in(EX_mem_to_reg), .write_enable(1'b1), .out(MEM_mem_to_reg), .clock(clock), .reset(reset));
+register #(1) EX_mem_unsigned_MEM (.in(EX_mem_unsigned), .write_enable(1'b1), .out(MEM_mem_unsigned), .clock(clock), .reset(reset));
 
 
 // -- Data memory ---------------------------------------------
 data_memory DATA_MEMORY(
 	.address(EX_alu_out),        // EX instead of MEM since memory has input registers
     .mem_mode(EX_mem_mode),      // EX instead of MEM since memory has input registers
+    .mem_unsigned(MEM_mem_unsigned),
 	.clock(clock),  
 	.data(EX_data_1),            // EX instead of MEM since memory has input registers
     .wren(EX_mem_write_enable),  // EX instead of MEM since memory has input registers

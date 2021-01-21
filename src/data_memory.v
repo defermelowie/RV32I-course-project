@@ -1,12 +1,14 @@
 module data_memory (
 	address,        // input -> address to read/write
     mem_mode,		// input -> specifies memory mode i.e. byte/halfword/word
+	mem_unsigned,	// input -> high indicates unsigned load
 	clock,          // input -> clock
 	data,           // input -> input data
 	wren,           // input -> high enables write
 	q,              // output -> output data
     io_input_bus,   // input -> input io
-    io_output_bus   // output -> output io
+    io_output_bus,  // output -> output io
+	reset			// input -> resets input registers
 );
 
 // -- Include definitions ---------------------------------
@@ -15,9 +17,8 @@ module data_memory (
 // -- Module IO -----------------------------------------------
 input [31:0] address;        // 32 bit word (alu output)
 input [1:0] mem_mode;
-input clock;
+input clock, mem_unsigned, wren, reset;
 input [31:0] data;
-input wren;
 output reg [31:0] q;
 input [13:0] io_input_bus;
 output reg [51:0] io_output_bus;
@@ -81,8 +82,8 @@ always @(*) begin
 		default: unmasked_q <= 0;
 	endcase
 	case (mem_mode_reg)	// Shift and mask result based on mode
-		MEM_BYTE: q <= {{24{unmasked_q[7]}}, unmasked_q[7:0]};
-		MEM_HALF: q <= {{16{unmasked_q[15]}}, unmasked_q[15:0]};
+		MEM_BYTE: q <= {(mem_unsigned)? {24{1'b0}} : {24{unmasked_q[7]}}, unmasked_q[7:0]};
+		MEM_HALF: q <= {(mem_unsigned)? {24{1'b0}} : {16{unmasked_q[15]}}, unmasked_q[15:0]};
 		MEM_WORD: q <= unmasked_q;
 		default: q <= unmasked_q;
 	endcase
