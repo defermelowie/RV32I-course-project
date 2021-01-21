@@ -1,2 +1,5 @@
 # Quartus & modelsim backup files
 *.bak
+
+# Vscode files
+.vscode/*
