@@ -13,4 +13,13 @@
 |13 ... 10|9 ... 0|
 
 ## Address space
+
+The way an address is interpreted:
+
+|Unused |Block address|Word address|Byte address|
+|:-----:|:-----------:|:----------:|:----------:|
+|[31:14]|[13:12]      |[11:2]      |[1:0]       |
+
+The resulting memory map:
+
 ![Memory map](./res/memory_map.svg)

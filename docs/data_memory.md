@@ -3,4 +3,6 @@
 Because some io's are memory mapped, the quartus 1-port ram block is not sufficient.
 Therefore this block will be wrapped in another module as shown below.
 
+Out of date!!
+
 ![Data memory wrapper](./res/data_memory.svg)
