@@ -60,7 +60,6 @@ wire bgeu_inst = (opcode == bra_gr) && (funct3 == 3'b111);
 wire lb_inst = (opcode == loa_gr) && (funct3 == 3'b000);
 wire lh_inst = (opcode == loa_gr) && (funct3 == 3'b001);
 wire lw_inst = (opcode == loa_gr) && (funct3 == 3'b010);
-wire ld_inst = (opcode == loa_gr) && (funct3 == 3'b011);
 wire lbu_inst = (opcode == loa_gr) && (funct3 == 3'b100);
 wire lhu_inst = (opcode == loa_gr) && (funct3 == 3'b101);
 wire lwu_inst = (opcode == loa_gr) && (funct3 == 3'b110);
@@ -68,7 +67,6 @@ wire lwu_inst = (opcode == loa_gr) && (funct3 == 3'b110);
 wire sb_inst = (opcode == sto_gr) && (funct3 == 3'b000);
 wire sh_inst = (opcode == sto_gr) && (funct3 == 3'b001);
 wire sw_inst = (opcode == sto_gr) && (funct3 == 3'b010);
-wire sd_inst = (opcode == sto_gr) && (funct3 == 3'b011);
 // Arithmetic & logic immediate group
 wire addi_inst = (opcode == rim_gr) && (funct3 == 3'b000);
 wire slli_inst = (opcode == rim_gr) && (funct3 == 3'b001);
