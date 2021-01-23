@@ -1,5 +1,5 @@
-li s0, 0x800			# IO base address for leds and hex
-li s3, 0x400			# IO base address for switches and keys
+li s0, 0x2000			# IO base address for leds and hex
+li s3, 0x1000			# IO base address for switches and keys
 addi s1, zero, 1		# boundary right side leds
 li s2, 0x200			# boundary left side leds
 li s4, 0x2000000		# limit for counting
