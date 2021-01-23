@@ -83,7 +83,7 @@ always @(*) begin
 	endcase
 	case (mem_mode_reg)	// Shift and mask result based on mode
 		MEM_BYTE: q <= {(mem_unsigned)? {24{1'b0}} : {24{unmasked_q[7]}}, unmasked_q[7:0]};
-		MEM_HALF: q <= {(mem_unsigned)? {24{1'b0}} : {16{unmasked_q[15]}}, unmasked_q[15:0]};
+		MEM_HALF: q <= {(mem_unsigned)? {16{1'b0}} : {16{unmasked_q[15]}}, unmasked_q[15:0]};
 		MEM_WORD: q <= unmasked_q;
 		default: q <= unmasked_q;
 	endcase
@@ -108,9 +108,9 @@ always @(posedge clock)
 begin
 	if (io_in_sel && wren_register)
 	begin
-		case (address_register[3:2]) // Must have input registers!
-			3'b00: io_registers[0] <= data_register;
-			3'b01: io_registers[1] <= data_register;
+		case (address_register[2]) // Must have input registers!
+			'b0: io_registers[0] <= data_register;
+			'b1: io_registers[1] <= data_register;
 		endcase
 	end
 end
