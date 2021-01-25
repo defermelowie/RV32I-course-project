@@ -106,7 +106,10 @@ reg [31:0] io_registers [1:0];
 // Process for writing to io registers
 always @(posedge clock)
 begin
-	if (io_in_sel && wren_register)
+	if (reset)
+        io_registers[0] <= 0;
+		io_registers[1] <= 0;
+    else if (io_in_sel && wren_register)
 	begin
 		case (address_register[2]) // Must have input registers!
 			'b0: io_registers[0] <= data_register;
