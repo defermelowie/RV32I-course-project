@@ -114,8 +114,40 @@ begin
 	else if (io_in_sel && wren_register)
 	begin
 		case (address_register[2]) // Must have input registers!
-			'b0: io_registers[0] <= data_register;
-			'b1: io_registers[1] <= data_register;
+			'b0: 
+				case (mem_mode_reg)
+				MEM_BYTE: 	
+							case (byte_enable_reg)
+								'b0001 : io_registers[0][7:0] <= data_register[7:0];
+								'b0010 : io_registers[0][15:8] <= data_register[7:0];
+								'b0100 : io_registers[0][23:16] <= data_register[7:0];
+								'b1000 : io_registers[0][31:24] <= data_register[7:0];
+							endcase
+				MEM_HALF: 	
+							case (byte_enable_reg)
+								'b0011 : io_registers[0][15:0] <= data_register[15:0];
+								'b0110 : io_registers[0][23:8] <= data_register[15:0];
+								'b1100 : io_registers[0][31:16] <= data_register[15:0];
+							endcase
+				MEM_WORD: io_registers[0] <= data_register;
+				endcase
+			'b1: 
+				case (mem_mode_reg)
+				MEM_BYTE: 	
+							case (byte_enable_reg)
+								'b0001 : io_registers[1][7:0] <= data_register[7:0];
+								'b0010 : io_registers[1][15:8] <= data_register[7:0];
+								'b0100 : io_registers[1][23:16] <= data_register[7:0];
+								'b1000 : io_registers[1][31:24] <= data_register[7:0];
+							endcase
+				MEM_HALF: 	
+							case (byte_enable_reg)
+								'b0011 : io_registers[1][15:0] <= data_register[15:0];
+								'b0110 : io_registers[1][23:8] <= data_register[15:0];
+								'b1100 : io_registers[1][31:16] <= data_register[15:0];
+							endcase
+				MEM_WORD: io_registers[1] <= data_register;
+				endcase
 		endcase
 	end
 end
@@ -151,6 +183,10 @@ end
 // Map signals from IO's to io_out based on address
 always @(posedge clock)
 begin
+	if (reset)
+	begin
+        io_out <= 0;
+	end
 	case (address_register[4:2]) // Must have input register for address signal!
 		3'b000: io_out <= {{22{1'b0}}, io_input_bus[9:0]};
 		3'b001: io_out <= {{31{1'b0}}, io_input_bus[10]};
