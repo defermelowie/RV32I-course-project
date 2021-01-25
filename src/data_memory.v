@@ -107,9 +107,11 @@ reg [31:0] io_registers [1:0];
 always @(posedge clock)
 begin
 	if (reset)
+	begin
         io_registers[0] <= 0;
 		io_registers[1] <= 0;
-    else if (io_in_sel && wren_register)
+	end
+	else if (io_in_sel && wren_register)
 	begin
 		case (address_register[2]) // Must have input registers!
 			'b0: io_registers[0] <= data_register;
