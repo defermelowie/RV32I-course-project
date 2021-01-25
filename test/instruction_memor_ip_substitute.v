@@ -36,7 +36,7 @@ assign q = mem[address_reg];
 
 // -- Initialize memory ---------------------------------------
 initial begin
-        $readmemh ("lees.hex", mem);
+        $readmemh ("knightriderdec.hex", mem);
     end
 
 endmodule
