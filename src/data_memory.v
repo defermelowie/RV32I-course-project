@@ -31,15 +31,15 @@ reg [31:0] io_in;
 
 // -- registers for address and data
 wire [31:0] address_register;
-register #(32) address_register_data_memory (.in(address), .write_enable(1'b1), .out(address_register), .clock(clock), .reset(1'b0));
+register #(32) address_register_data_memory (.in(address), .write_enable(1'b1), .out(address_register), .clock(clock), .reset(reset));
 wire [31:0] data_register;
-register #(32) data_register_data_memory (.in(data), .write_enable(1'b1), .out(data_register), .clock(clock), .reset(1'b0));
+register #(32) data_register_data_memory (.in(data), .write_enable(1'b1), .out(data_register), .clock(clock), .reset(reset));
 wire wren_register;
-register #(1) wren_register_data_memory (.in(wren), .write_enable(1'b1), .out(wren_register), .clock(clock), .reset(1'b0));
+register #(1) wren_register_data_memory (.in(wren), .write_enable(1'b1), .out(wren_register), .clock(clock), .reset(reset));
 wire [3:0] byte_enable_reg;
-register #(4) byte_enable_reg_data_memory (.in(byte_enable), .write_enable(1'b1), .out(byte_enable_reg), .clock(clock), .reset(1'b0));
+register #(4) byte_enable_reg_data_memory (.in(byte_enable), .write_enable(1'b1), .out(byte_enable_reg), .clock(clock), .reset(reset));
 wire [1:0] mem_mode_reg;
-register #(2) mem_mode_reg_data_memory (.in(mem_mode), .write_enable(1'b1), .out(mem_mode_reg), .clock(clock), .reset(1'b0));
+register #(2) mem_mode_reg_data_memory (.in(mem_mode), .write_enable(1'b1), .out(mem_mode_reg), .clock(clock), .reset(reset));
 
 // -- Set byte enable according to mode & address -------------
 always @(*) begin
@@ -170,6 +170,13 @@ bin2seg convert_digit_4 (io_registers[1][19:16], digit_4);
 bin2seg convert_digit_5 (io_registers[1][23:20], digit_5);
 // Map signals to IO's
 always @(*) begin
+	/*
+	if (reset)
+	begin
+		io_output_bus[51:0] = 'b0;
+	end
+	else begin
+	*/
 	io_output_bus[9:0] <= io_registers[0][9:0];	// First io register
 	io_output_bus[16:10] <= digit_0; 			// 1st digit from second io register
 	io_output_bus[23:17] <= digit_1; 			// 2nd digit from second io register
@@ -177,16 +184,19 @@ always @(*) begin
 	io_output_bus[37:31] <= digit_3; 			// 4th digit from second io register
 	io_output_bus[44:38] <= digit_4; 			// 5th digit from second io register
 	io_output_bus[51:45] <= digit_5; 			// 6th digit from second io register
+	//end
 end
 
 // -- Io output block -----------------------------------------
 // Map signals from IO's to io_out based on address
 always @(posedge clock)
 begin
+	/*
 	if (reset)
 	begin
         io_out <= 0;
 	end
+	*/
 	case (address_register[4:2]) // Must have input register for address signal!
 		3'b000: io_out <= {{22{1'b0}}, io_input_bus[9:0]};
 		3'b001: io_out <= {{31{1'b0}}, io_input_bus[10]};
