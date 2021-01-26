@@ -8,9 +8,14 @@
 
 ## Structure
 
-### Instruction fetch
+Bovenstaand schema toont de gepipelinede RISC-V processor die wij ontworpen hebben op basis van het boek 'Computer Organization and Design' van David A. Patterson en John L. Hennessy. Deze processor bestaat uit 5 fases die hieronder beschreven zijn. 
 
-### Instruction decode
+### Instruction fetch (IF)
+
+### Execution
+In deze fase wordt er aan de hand van de program counter (PC) een instructie opgehaald uit het instructiegeheugen. Dit gebeurt bij elke stijgende flank van het kloksignaal. De waarde die hiervoor aangelegd wordt als adres voor het instructie geheugen wordt bepaald door een multiplexer. Bij normale werking zal de PC bij elke klokcyclus met 4 stijgen. Indien er echter een branch of een jump genomen wordt zal de multiplexer dit branch adres doorgeven aan het instructiegeheugen. Het controlesignaal wordt bepaalt uit 2 controlesignalen van de controle unit en 1 signaal van de branch comparison unit.
+
+### Instruction decode (ID)
 
 #### Control
 De belangrijkste module uit de instruction decode fase is de `CONTROL` module. `CONTROL` neemt de volledige instructie en "decodeert" deze om vervolgens controle signalen te genereren die de *dataflow* beïnvloeden. De module heeft naast instructie ook nog een `stall` input, die zorgt er simpelweg voor dat alle outputs `'b0` worden waneer de core *must stall*. Hieronder staan kort de io's van deze module uitgelegd.
@@ -80,9 +85,15 @@ module branch_comparison_unit (
 
 Deze module zit niet volledig in de `ID` fase maar stuurt er wel een groot deel logica aan waardoor ze hier besproken word. De `FORWARDING_UNIT` zal controleren of het resultaat van een nog niet volledig afgewerkte instructie al nodig is een een volgende instructie. Indien mogelijk zal de *forwarding unit* er dan voor zorgen dat het resultaat tegen de normale *data flow* in *gefoward* wordt door *mux* in het midden van tekening aan te sturen.
 
-### Execution
+### Execution (EX)
 
-### Write back
+In deze fase worden de bewerkingen van de processor uitgevoerd. Deze gebeuren in de ALU (Aritmetic Logic Unit). Deze heeft drie ingangen en een uitgang. 
+Het controlesignaal dat toekomt zal bepalen welke berekening/instructie er zal uitgevoerd worden op de twee data ingangen. Het resultaat wordt dan vrijgegeven aan de uitgang.
+Voor beide data ingangen van de ALU staat nog een multiplexer om te bepalen welke data er binnenkomt aan de ALU. Aan de ene ingang wordt er een keuze gemaakt tussen de volgende PC waarde en data die afkomstig is van de ID fase. Aan de andere ingang is het een keuze tussen data uit de ID fase en een getal van de immediate_generator. Deze twee multiplexers worden aangestuurd door de controle unit.
+
+### Memory access (MEM)
+
+### Write back (WB)
 
 ## Testbenches
 
