@@ -8,13 +8,15 @@
 
 ## Structure
 
-Bovenstaand schema toont de gepipelinede RISC-V processor die wij ontworpen hebben op basis van het boek 'Computer Organization and Design' van David A. Patterson en John L. Hennessy. Deze processor bestaat uit 5 fases die hieronder beschreven zijn. 
+Bovenstaand schema toont de *pipelined* RISC-V processor die wij ontworpen hebben op basis van het boek 'Computer Organization and Design' van David A. Patterson en John L. Hennessy. Deze processor bestaat uit 5 fases die hieronder beschreven zijn. 
 
 ### Instruction fetch (IF)
 
-In deze fase wordt er aan de hand van de program counter (PC) een instructie opgehaald uit het instructiegeheugen. Dit gebeurt bij elke stijgende flank van het kloksignaal. De waarde die hiervoor aangelegd wordt als adres voor het instructie geheugen wordt bepaald door een multiplexer. Bij normale werking zal de PC bij elke klokcyclus met 4 stijgen. Indien er echter een branch of een jump genomen wordt zal de multiplexer dit branch adres doorgeven aan het instructiegeheugen. Het controlesignaal wordt bepaalt uit 2 controlesignalen van de controle unit en 1 signaal van de branch comparison unit.
+In deze fase wordt er aan de hand van de program counter (PC) een instructie opgehaald uit het instructiegeheugen. Dit gebeurt bij elke stijgende flank van het kloksignaal. De waarde die hiervoor aangelegd wordt als adres voor het instructie geheugen wordt bepaald door een multiplexer. Bij normale werking zal de PC bij elke klokcyclus met 4 stijgen. Indien er echter een branch of een jump genomen wordt zal de multiplexer dit branch adres doorgeven aan het instructiegeheugen. Het controlesignaal bestaat uit het comparison signaal van de *branch comparison unit* samen met `branch_inst` of `jump_inst`.
 
 ### Instruction decode (ID)
+
+In deze fase wordt de instructie omgezet naar controle signalen om op die manier de rest van de core correct aan te sturen.
 
 #### Control
 De belangrijkste module uit de instruction decode fase is de `CONTROL` module. `CONTROL` neemt de volledige instructie en "decodeert" deze om vervolgens controle signalen te genereren die de *dataflow* beïnvloeden. De module heeft naast instructie ook nog een `stall` input, die zorgt er simpelweg voor dat alle outputs `'b0` worden waneer de core *must stall*. Hieronder staan kort de io's van deze module uitgelegd.
