@@ -96,7 +96,7 @@ data_memory_ip_block DATA_MEMORY_IP_BLOCK(
 	.address(address[11:2]),        // has input register !
     .byteena(byte_enable),          // has input register !
 	.clock(clock),                  // has input register !
-	.data(data),                    // has input register !
+	.data(data << (address[1:0]*8)),  // has input register !
     .wren(wren && ram_sel),     	// has input register !
 	.q(mem_out)
 );
