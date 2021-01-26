@@ -16,7 +16,6 @@ In deze fase wordt er aan de hand van de program counter (PC) een instructie opg
 
 ### Instruction decode (ID)
 
-<<<<<<< HEAD
 In deze fase wordt de instructie omgezet naar controle signalen om op die manier de rest van de core correct aan te sturen.
 
 #### Control
@@ -87,8 +86,6 @@ module branch_comparison_unit (
 
 Deze module zit niet volledig in de `ID` fase maar stuurt er wel een groot deel logica aan waardoor ze hier besproken word. De `FORWARDING_UNIT` zal controleren of het resultaat van een nog niet volledig afgewerkte instructie al nodig is een een volgende instructie. Indien mogelijk zal de *forwarding unit* er dan voor zorgen dat het resultaat tegen de normale *data flow* in *gefoward* wordt door *mux* in het midden van tekening aan te sturen.
 
-=======
->>>>>>> 25bef2c70f3ebd9d568585e46878eb45cccbbab1
 ### Execution (EX)
 
 In deze fase worden de bewerkingen van de processor uitgevoerd. Deze gebeuren in de ALU (Aritmetic Logic Unit). Deze heeft drie ingangen en een uitgang. 
