@@ -24,8 +24,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.98994951"
-     inkscape:cx="493.31666"
-     inkscape:cy="425.31477"
+     inkscape:cx="656.96137"
+     inkscape:cy="472.79194"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
@@ -428,13 +428,13 @@
     <text
        xml:space="preserve"
        style="font-size:3.52777px;line-height:1.25;font-family:sans-serif;stroke-width:0.264583"
-       x="-149.69232"
-       y="167.44345"
+       x="-151.5632"
+       y="170.91795"
        id="text1271-9"><tspan
          sodipodi:role="line"
          id="tspan1269-6"
-         x="-149.69232"
-         y="167.44345"
+         x="-151.5632"
+         y="170.91795"
          style="font-size:3.52777px;stroke-width:0.264583">write_GPIO_register</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:0.499999;stroke-miterlimit:4;stroke-dasharray:none"
