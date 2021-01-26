@@ -229,9 +229,9 @@ wire [XLEN-1:0] MEM_mem_data_in;
 
 // -- Pipeline reg EX -> MEM ----------------------------------
 register #(32) EX_instruction_MEM (.in(EX_instruction), .write_enable(1'b1), .out(MEM_instruction), .clock(clock), .reset(reset));
-register #(XLEN) EX_alu_out_MEM (.in(EX_alu_out), .write_enable(1'b1), .out(MEM_alu_out), .clock(clock), .reset(reset));
-register #(XLEN) EX_mem_data_in_MEM (.in(EX_data_1), .write_enable(1'b1), .out(MEM_mem_data_in), .clock(clock), .reset(reset));   // Alu in 1 -> mem data!
-register #(1) EX_mem_write_enable_MEM (.in(EX_mem_write_enable), .write_enable(1'b1), .out(MEM_mem_write_enable), .clock(clock), .reset(reset));
+register #(XLEN) EX_alu_out_MEM (.in(EX_alu_out), .write_enable(1'b1), .out(MEM_alu_out), .clock(clock), .reset(reset)); //overbodig?
+register #(XLEN) EX_mem_data_in_MEM (.in(EX_data_1), .write_enable(1'b1), .out(MEM_mem_data_in), .clock(clock), .reset(reset));  //overbodig? // Alu in 1 -> mem data!
+register #(1) EX_mem_write_enable_MEM (.in(EX_mem_write_enable), .write_enable(1'b1), .out(MEM_mem_write_enable), .clock(clock), .reset(reset));  //overbodig?
 register #(1) EX_reg_write_enable_MEM (.in(EX_reg_write_enable), .write_enable(1'b1), .out(MEM_reg_write_enable), .clock(clock), .reset(reset));
 register #(1) EX_mem_to_reg_MEM (.in(EX_mem_to_reg), .write_enable(1'b1), .out(MEM_mem_to_reg), .clock(clock), .reset(reset));
 register #(1) EX_mem_unsigned_MEM (.in(EX_mem_unsigned), .write_enable(1'b1), .out(MEM_mem_unsigned), .clock(clock), .reset(reset));
