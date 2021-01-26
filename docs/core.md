@@ -7,7 +7,7 @@
 ![Overview](./res/core.svg)
 
 ## Structure
-
+test
 ## Testbenches
 
 Om de core te kunnen testen is er gebruik gemaakt van twee verschillende test benches, één voor de alu en één voor de volledige core.
