@@ -16,6 +16,7 @@ In deze fase wordt er aan de hand van de program counter (PC) een instructie opg
 
 ### Instruction decode (ID)
 
+<<<<<<< HEAD
 In deze fase wordt de instructie omgezet naar controle signalen om op die manier de rest van de core correct aan te sturen.
 
 #### Control
@@ -86,6 +87,8 @@ module branch_comparison_unit (
 
 Deze module zit niet volledig in de `ID` fase maar stuurt er wel een groot deel logica aan waardoor ze hier besproken word. De `FORWARDING_UNIT` zal controleren of het resultaat van een nog niet volledig afgewerkte instructie al nodig is een een volgende instructie. Indien mogelijk zal de *forwarding unit* er dan voor zorgen dat het resultaat tegen de normale *data flow* in *gefoward* wordt door *mux* in het midden van tekening aan te sturen.
 
+=======
+>>>>>>> 25bef2c70f3ebd9d568585e46878eb45cccbbab1
 ### Execution (EX)
 
 In deze fase worden de bewerkingen van de processor uitgevoerd. Deze gebeuren in de ALU (Aritmetic Logic Unit). Deze heeft drie ingangen en een uitgang. 
@@ -93,6 +96,8 @@ Het controlesignaal dat toekomt zal bepalen welke berekening/instructie er zal u
 Voor beide data ingangen van de ALU staat nog een multiplexer om te bepalen welke data er binnenkomt aan de ALU. Aan de ene ingang wordt er een keuze gemaakt tussen de volgende PC waarde en data die afkomstig is van de ID fase. Aan de andere ingang is het een keuze tussen data uit de ID fase en een getal van de immediate_generator. Deze twee multiplexers worden aangestuurd door de controle unit.
 
 ### Memory access (MEM)
+
+In deze fase wordt er data geschreven of gelezen in het datageheugen of de memory mapped inputs/outputs (IO's). Aangezien het ram geheugen dat gebruikt wordt in het data geheugen al registers bevat worden de signalen rechtstreeks vanuit de EX fase aangesloten. Voor de IO's worden er dan interne registers toegevoegd in de data memory module. De ingangen aan deze module bevatten data en signalen zoals het adres voor het geheugen, data die weggeschreven dient te worden en een aantal controlesignalen. 
 
 ### Write back (WB)
 
