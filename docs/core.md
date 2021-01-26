@@ -165,7 +165,7 @@ in_1 <= 7;
 $display("TEST DONE: add");
 ```
 
-In deze test is ook meteen de gebruiktwijze van de macro die hierboven vermeld werd duidelijk.
+In deze test is ook meteen de gebruikte wijze van de macro die hierboven vermeld werd duidelijk.
 
 ### Core testbench
 
