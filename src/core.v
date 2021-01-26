@@ -168,7 +168,7 @@ immediate_generator IMMEDIATE_GENERATOR(
 );
 
 // -- Calculate branch address --------------------------------
-assign pc_branch_address = (ID_jump_reg) ? ID_read_data_0 : ID_immediate_out + ID_pc_out;
+assign pc_branch_address = (ID_jump_reg) ? ID_immediate_out + ID_data_0 : ID_immediate_out + ID_pc_out;
 
 // -- Set branch enable ---------------------------------------
 assign branch_enable = (ID_branch_inst && ID_branch_comp) || ID_jump_inst;
