@@ -8,6 +8,14 @@
 
 ## Structure
 
+### Instruction fetch
+
+### Instruction decode
+
+### Execution
+
+### Write back
+
 ## Testbenches
 
 Om de core te kunnen testen is er gebruik gemaakt van twee verschillende test benches, één voor de alu en één voor de volledige core.
@@ -69,7 +77,7 @@ In deze test is ook meteen de gebruiktwijze van de macro die hierboven vermeld w
 
 ### Core testbench
 
-De testbench voor de `core` heeft ongeveer dezelfde setup als die van de `ALU`. Met het verschil dat er in deze testbench geen testen gedefineerd zijn. Het enige dat deze testbench doet is de core in een bekende staat brengen met een reset. Daarna begint de core het programma uit te voeren dat in het instructie memory staat. Om de werking van dergelijk programma na te gaan hebben is steeds de waveform editor gebruikt. De signalen die vaak nuttig bleken zijn te zien in onderstaande indeling.
+De testbench voor de `core` heeft ongeveer dezelfde setup als die van de `ALU`. Met het verschil dat er in deze testbench geen testen gedefineerd zijn. Het enige dat deze testbench doet is de core in een bekende staat brengen met een reset. Daarna begint de core het programma uit te voeren dat in het instructie memory staat. Om de werking van dergelijk programma na te gaan is steeds de waveform editor gebruikt. De signalen die vaak nuttig bleken zijn te zien in onderstaande indeling.
 
 ![Veelgebruikte signalen](./res/waveform_setup.PNG)
 
