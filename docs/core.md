@@ -26,6 +26,8 @@ Voor beide data ingangen van de ALU staat nog een multiplexer om te bepalen welk
 
 ### Write back (WB)
 
+Tijdens de WB fase wordt de data, die opgehaald werd uit het datageheugen of werd berekend door de ALU, naar de registerfile geschreven. Een multiplexer die wederom aangestuurd wordt door een controlesignaal verstuurd door de controle unit zal de juiste data doorgeven. Het adres van het register waarin deze data geschreven moet worden wordt bepaalt uit de instructie die toekomt in de WB fase. 
+
 ## Testbenches
 
 Om de core te kunnen testen is er gebruik gemaakt van twee verschillende test benches, één voor de alu en één voor de volledige core.
