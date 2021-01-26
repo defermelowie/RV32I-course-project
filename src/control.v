@@ -111,9 +111,9 @@ always @(*) begin
         // Set signal if needed for instruction
         case (1'b1)
             lui_inst: begin alu_op <= ALU_PASS_1; alu_src <= 1; reg_write_enable <= 1; end
-            //auipc_inst: TODO
-            jal_inst: begin alu_op <= ALU_PASS_1; reg_write_enable <= 1; pc_to_reg <= 1; jump_enable <= 1; end
-            jalr_inst: begin alu_op <= ALU_PASS_1; reg_write_enable <= 1; pc_to_reg <= 1; jump_enable <= 1; jump_reg <= 1; end
+            auipc_inst: begin alu_op <= ALU_ADD; alu_src <= 1; reg_write_enable <= 1; pc_to_reg <= 1; end //TODO
+            jal_inst: begin alu_op <= ALU_PASS_0; reg_write_enable <= 1; pc_to_reg <= 1; jump_enable <= 1; end
+            jalr_inst: begin alu_op <= ALU_PASS_0; reg_write_enable <= 1; pc_to_reg <= 1; jump_enable <= 1; jump_reg <= 1; end
             // Branch group
             beq_inst: begin branch_enable <= 1; branch_mode <= EQ; end
             bne_inst: begin branch_enable <= 1; branch_mode <= NE; end

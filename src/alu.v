@@ -34,6 +34,7 @@ always @(*) begin
                 out <= in_0_extended >> in_1;
         end
         ALU_PASS_1: out <= in_1;
+        ALU_PASS_0: out <= in_0;
         ALU_LT: begin
             if (in_0[XLEN-1] && in_1[XLEN-1])           // Both are negative
                 out <= (in_0 < in_1);

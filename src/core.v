@@ -201,11 +201,12 @@ register #(9) ID_pc_EX (.in(ID_pc_out), .write_enable(1'b1), .out(EX_pc), .clock
 // -- Determine alu inputs ------------------------------------
 reg [XLEN-1:0] EX_alu_in_0, EX_alu_in_1;
 always @(*) begin
-    EX_alu_in_0 <= EX_data_0;
+    if (EX_pc_to_reg)
+        EX_alu_in_0 <= EX_pc + 4;   // Save next pc value
+    else
+        EX_alu_in_0 <= EX_data_0;
     if (EX_alu_src)
         EX_alu_in_1 <= EX_immediate_out;
-    else if (EX_pc_to_reg)
-        EX_alu_in_1 <= EX_pc + 4;   // Save next pc value
     else
         EX_alu_in_1 <= EX_data_1;
 end
