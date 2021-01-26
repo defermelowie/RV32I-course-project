@@ -8,8 +8,8 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="1130.4196mm"
-   height="600.97772mm"
-   viewBox="0 0 1130.4195 600.97772"
+   height="657.82483mm"
+   viewBox="0 0 1130.4195 657.82484"
    version="1.1"
    id="svg8"
    inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
@@ -172,8 +172,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.24015024"
-     inkscape:cx="2447.8446"
-     inkscape:cy="1492.6585"
+     inkscape:cx="2147.286"
+     inkscape:cy="1326.1236"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
@@ -357,33 +357,35 @@
        r="1" />
     <path
        style="fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0.499999;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       d="m 586.00355,-317.68873 v 53.1901"
-       id="path1233" />
+       d="M 586.00355,-317.68873 V -74.9992"
+       id="path1233"
+       sodipodi:nodetypes="cc" />
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777px;line-height:1.25;font-family:Consolas;-inkscape-font-specification:Consolas;stroke-width:0.264583"
        x="574.12311"
-       y="-261.3822"
+       y="-71.882774"
        id="text1237"><tspan
          sodipodi:role="line"
          id="tspan1235"
          x="574.12311"
-         y="-261.3822"
+         y="-71.882774"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Consolas;-inkscape-font-specification:Consolas;stroke-width:0.264583">io_input_bus</tspan></text>
     <path
        style="fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:0.499999;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       d="m 610.15405,-317.68873 v 65.84964"
-       id="path1239" />
+       d="m 610.15405,-317.68873 v 254.7982"
+       id="path1239"
+       sodipodi:nodetypes="cc" />
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777px;line-height:1.25;font-family:Consolas;-inkscape-font-specification:Consolas;stroke-width:0.264583"
        x="598.66315"
-       y="-248.7227"
+       y="-56.468922"
        id="text1243"><tspan
          sodipodi:role="line"
          id="tspan1241"
          x="598.66315"
-         y="-248.7227"
+         y="-56.468922"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Consolas;-inkscape-font-specification:Consolas;stroke-width:0.264583">io_output_bus</tspan></text>
     <g
        id="g2605">
@@ -2696,5 +2698,27 @@
        cx="-43.668957"
        cy="-660.27802"
        r="1" />
+    <text
+       xml:space="preserve"
+       style="font-size:3.52777px;line-height:1.25;font-family:Consolas;-inkscape-font-specification:Consolas;text-decoration:none;text-decoration-line:none;text-decoration-color:#000000;fill:#000000;stroke-width:0.332325;stop-color:#000000"
+       x="-42.376923"
+       y="-390.23361"
+       id="text4105-11"><tspan
+         sodipodi:role="line"
+         id="tspan4103-89"
+         x="-42.376923"
+         y="-390.23361"
+         style="stroke-width:0.332325">stall</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:3.52777px;line-height:1.25;font-family:Consolas;-inkscape-font-specification:Consolas;text-decoration:none;text-decoration-line:none;text-decoration-color:#000000;fill:#000000;stroke-width:0.332325;stop-color:#000000"
+       x="-145.38968"
+       y="-392.71249"
+       id="text4105-15"><tspan
+         sodipodi:role="line"
+         id="tspan4103-7"
+         x="-145.38968"
+         y="-392.71249"
+         style="stroke-width:0.332325">stall</tspan></text>
   </g>
 </svg>
