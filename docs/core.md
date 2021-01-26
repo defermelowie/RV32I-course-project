@@ -8,7 +8,7 @@
 
 ## Structure
 
-In bovenstaand schema toont het de gepipelinede RISC-V processor die wij ontworpen hebben op basis van het boek 'Computer Organization and Design' van David A. Patterson en John L. Hennessy. Deze processor bestaat uit volgende 5 fases die hieronder beschreven zijn. 
+Bovenstaand schema toont de gepipelinede RISC-V processor die wij ontworpen hebben op basis van het boek 'Computer Organization and Design' van David A. Patterson en John L. Hennessy. Deze processor bestaat uit volgende 5 fases die hieronder beschreven zijn. 
 
 ### Instruction fetch (IF)
 
