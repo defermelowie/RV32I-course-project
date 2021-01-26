@@ -46,7 +46,7 @@ always @(*) begin
 	if (wren)
 		case (mem_mode)
 			MEM_BYTE: byte_enable <= ('b0001 << address[1:0]);
-			MEM_HALF: byte_enable <= ('b0011 << address[1:0]);	// TODO "Problem" if address[1:0] == 3
+			MEM_HALF: byte_enable <= ('b0011 << address[1:0]); // "Problem" if address[1:0] == 3
 			MEM_WORD: byte_enable <= 'b1111;
 			default: byte_enable <= 'b1111; // Write full words as default
 		endcase
@@ -56,14 +56,15 @@ end
 // -- Select memory block (for writing) -----------------------
 reg ram_sel, io_in_sel;	// Block select signals
 always @(*) begin
-	ram_sel <= 0;
-	io_in_sel <= 0;
-	if (address[13:12] == 'b00) begin
+	
+	if (address[13:12] == 'b00)
 		ram_sel <= 1;
-	end
-	if (address_register[13:12] == 'b10) begin
+	else
+		ram_sel <= 0;
+	if (address_register[13:12] == 'b10)
 		io_in_sel <= 1;
-	end
+	else 
+		io_in_sel <= 0;
 end
 
 // -- Select output source ------------------------------------
@@ -71,19 +72,19 @@ reg [31:0] unmasked_q;
 always @(*) begin
 	case (address_register[13:12])
 		'b00: begin	// Select ram block
-			unmasked_q <= mem_out >> (address_register[1:0]*8); // TODO "Problem" if address[1:0] == 3 and mode == MEM_HALF
+			unmasked_q <= mem_out >> (address_register[1:0]*8); // "Problem" if address[1:0] == 3 and mode == MEM_HALF
 		end
 		'b01: begin	// Select block for reading from io
-			unmasked_q <= io_out >> (address_register[1:0]*8); // TODO "Problem" if address[1:0] == 3 and mode == MEM_HALF
+			unmasked_q <= io_out >> (address_register[1:0]*8); // "Problem" if address[1:0] == 3 and mode == MEM_HALF
 		end
 		'b10: begin	// Select block for writing to io
-			unmasked_q <= io_in >> (address_register[1:0]*8); // TODO "Problem" if address[1:0] == 3 and mode == MEM_HALF
+			unmasked_q <= io_in >> (address_register[1:0]*8); // "Problem" if address[1:0] == 3 and mode == MEM_HALF
 		end
 		default: unmasked_q <= 0;
 	endcase
 	case (mem_mode_reg)	// Shift and mask result based on mode
 		MEM_BYTE: q <= {(mem_unsigned)? {24{1'b0}} : {24{unmasked_q[7]}}, unmasked_q[7:0]};
-		MEM_HALF: q <= {(mem_unsigned)? {24{1'b0}} : {16{unmasked_q[15]}}, unmasked_q[15:0]};
+		MEM_HALF: q <= {(mem_unsigned)? {16{1'b0}} : {16{unmasked_q[15]}}, unmasked_q[15:0]};
 		MEM_WORD: q <= unmasked_q;
 		default: q <= unmasked_q;
 	endcase
@@ -107,11 +108,48 @@ reg [31:0] io_registers [1:0];
 // Process for writing to io registers
 always @(posedge clock)
 begin
-	if (io_in_sel && wren_register)
+	if (reset)
 	begin
-		case (address_register[3:2]) // Must have input registers!
-			3'b00: io_registers[0] <= data_register;
-			3'b01: io_registers[1] <= data_register;
+        io_registers[0] <= 0;
+		io_registers[1] <= 0;
+	end
+	else if (io_in_sel && wren_register)
+	begin
+		case (address_register[2]) // Must have input registers!
+			'b0: 
+				case (mem_mode_reg)
+				MEM_BYTE: 	
+							case (byte_enable_reg)
+								'b0001 : io_registers[0][7:0] <= data_register[7:0];
+								'b0010 : io_registers[0][15:8] <= data_register[7:0];
+								'b0100 : io_registers[0][23:16] <= data_register[7:0];
+								'b1000 : io_registers[0][31:24] <= data_register[7:0];
+							endcase
+				MEM_HALF: 	
+							case (byte_enable_reg)
+								'b0011 : io_registers[0][15:0] <= data_register[15:0];
+								'b0110 : io_registers[0][23:8] <= data_register[15:0];
+								'b1100 : io_registers[0][31:16] <= data_register[15:0];
+							endcase
+				MEM_WORD: io_registers[0] <= data_register;
+				endcase
+			'b1: 
+				case (mem_mode_reg)
+				MEM_BYTE: 	
+							case (byte_enable_reg)
+								'b0001 : io_registers[1][7:0] <= data_register[7:0];
+								'b0010 : io_registers[1][15:8] <= data_register[7:0];
+								'b0100 : io_registers[1][23:16] <= data_register[7:0];
+								'b1000 : io_registers[1][31:24] <= data_register[7:0];
+							endcase
+				MEM_HALF: 	
+							case (byte_enable_reg)
+								'b0011 : io_registers[1][15:0] <= data_register[15:0];
+								'b0110 : io_registers[1][23:8] <= data_register[15:0];
+								'b1100 : io_registers[1][31:16] <= data_register[15:0];
+							endcase
+				MEM_WORD: io_registers[1] <= data_register;
+				endcase
 		endcase
 	end
 end
@@ -134,6 +172,13 @@ bin2seg convert_digit_4 (io_registers[1][19:16], digit_4);
 bin2seg convert_digit_5 (io_registers[1][23:20], digit_5);
 // Map signals to IO's
 always @(*) begin
+	/*
+	if (reset)
+	begin
+		io_output_bus[51:0] = 'b0;
+	end
+	else begin
+	*/
 	io_output_bus[9:0] <= io_registers[0][9:0];	// First io register
 	io_output_bus[16:10] <= digit_0; 			// 1st digit from second io register
 	io_output_bus[23:17] <= digit_1; 			// 2nd digit from second io register
@@ -141,12 +186,19 @@ always @(*) begin
 	io_output_bus[37:31] <= digit_3; 			// 4th digit from second io register
 	io_output_bus[44:38] <= digit_4; 			// 5th digit from second io register
 	io_output_bus[51:45] <= digit_5; 			// 6th digit from second io register
+	//end
 end
 
 // -- Io output block -----------------------------------------
 // Map signals from IO's to io_out based on address
 always @(posedge clock)
 begin
+	/*
+	if (reset)
+	begin
+        io_out <= 0;
+	end
+	*/
 	case (address_register[4:2]) // Must have input register for address signal!
 		3'b000: io_out <= {{22{1'b0}}, io_input_bus[9:0]};
 		3'b001: io_out <= {{31{1'b0}}, io_input_bus[10]};
