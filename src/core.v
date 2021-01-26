@@ -39,7 +39,6 @@ end
 // -- Instruction memory --------------------------------------
 wire [XLEN-1:0] IF_instruction;
 instruction_memory INSTRUCTION_MEMORY(
-    .aclr(reset),
     .address(IF_pc_in >> 2), // pc in instead of pc out because address has an input register
     .addressstall_a(stall),
 	.clock(clock),  
