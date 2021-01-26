@@ -47,7 +47,7 @@ module control (
 
 #### Register file
 
-De `REGISTER_FILE` bestaat bij een RV32I uit 32 registers en heeft twee *address* inputs zodat er twee waarden gelijktijdig uitgelezen kunnen worden. Verder heeft de register file een *address* en een *data* ingang om nieuwe dat weg te schijven. Dit gebeurt enkel wanneer de `write_enable` ingang hoog is.
+De `REGISTER_FILE` bestaat bij een RV32I uit 32 registers en heeft twee *address* inputs zodat er twee waarden gelijktijdig uitgelezen kunnen worden. Verder heeft de register file een *address* en een *data* ingang om nieuwe data weg te schijven. Dit gebeurt enkel wanneer de `write_enable` ingang hoog is.
 
 ```verilog
 module register_file (
@@ -88,7 +88,7 @@ module branch_comparison_unit (
 
 #### Forwarding unit
 
-Deze module zit niet volledig in de `ID` fase maar stuurt er wel een groot deel logica aan waardoor ze hier besproken word. De `FORWARDING_UNIT` zal controleren of het resultaat van een nog niet volledig afgewerkte instructie al nodig is een een volgende instructie. Indien mogelijk zal de *forwarding unit* er dan voor zorgen dat het resultaat tegen de normale *data flow* in *gefoward* wordt door *mux* in het midden van tekening aan te sturen.
+Deze module zit niet volledig in de `ID` fase maar stuurt er wel een groot deel logica aan waardoor ze hier besproken word. De `FORWARDING_UNIT` zal controleren of het resultaat van een nog niet volledig afgewerkte instructie al nodig is een een volgende instructie. Indien mogelijk zal de *forwarding unit* er dan voor zorgen dat het resultaat tegen de normale *data flow* in *geforward* wordt door *mux* in het midden van tekening aan te sturen.
 
 ### Execution (EX)
 
