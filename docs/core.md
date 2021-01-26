@@ -12,7 +12,6 @@ Bovenstaand schema toont de gepipelinede RISC-V processor die wij ontworpen hebb
 
 ### Instruction fetch (IF)
 
-### Execution
 In deze fase wordt er aan de hand van de program counter (PC) een instructie opgehaald uit het instructiegeheugen. Dit gebeurt bij elke stijgende flank van het kloksignaal. De waarde die hiervoor aangelegd wordt als adres voor het instructie geheugen wordt bepaald door een multiplexer. Bij normale werking zal de PC bij elke klokcyclus met 4 stijgen. Indien er echter een branch of een jump genomen wordt zal de multiplexer dit branch adres doorgeven aan het instructiegeheugen. Het controlesignaal wordt bepaalt uit 2 controlesignalen van de controle unit en 1 signaal van de branch comparison unit.
 
 ### Instruction decode (ID)
