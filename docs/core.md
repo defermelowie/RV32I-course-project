@@ -14,6 +14,10 @@
 
 ### Execution
 
+In deze fase worden de bewerkingen van de processor uitgevoerd. Deze gebeuren in de ALU (Aritmetic Logic Unit). Deze heeft drie ingangen en een uitgang. 
+Het controlesignaal dat toekomt zal bepalen welke berekening/instructie er zal uitgevoerd worden op de twee data ingangen. Het resultaat wordt dan vrijgegeven aan de uitgang.
+Voor beide data ingangen van de ALU staat nog een multiplexer om te bepalen welke data er binnenkomt aan de ALU. Aan de ene ingang wordt er een keuze gemaakt tussen de volgende PC waarde en data die afkomstig is van de ID fase. Aan de andere ingang is het een keuze tussen data uit de ID fase en een getal van de immediate_generator. Deze twee multiplexers worden aangestuurd door de controle unit.
+
 ### Write back
 
 ## Testbenches
