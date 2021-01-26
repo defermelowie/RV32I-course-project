@@ -46,11 +46,11 @@ jal time_consuming_loop
 li t0, 0xCCEEFF11
 sb t0, 0(zero) # Should store 0x0302B111
 jal time_consuming_loop
-sb t0, 1(zero) # Should store 0x0302FF11
+sb t0, 1(zero) # Should store 0x03021111
 jal time_consuming_loop
-sb t0, 2(zero) # Should store 0x03EEFF11
+sb t0, 2(zero) # Should store 0x03111111
 jal time_consuming_loop
-sb t0, 3(zero) # Should store 0xCCEEFF11
+sb t0, 3(zero) # Should store 0x11111111
 jal time_consuming_loop
 
 time_consuming_loop:
