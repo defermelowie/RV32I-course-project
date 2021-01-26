@@ -14,9 +14,13 @@ Bovenstaand schema toont de *pipelined* RISC-V processor die wij ontworpen hebbe
 
 In deze fase wordt er aan de hand van de program counter (PC) een instructie opgehaald uit het instructiegeheugen. Dit gebeurt bij elke stijgende flank van het kloksignaal. De waarde die hiervoor aangelegd wordt als adres voor het instructie geheugen wordt bepaald door een multiplexer. Bij normale werking zal de PC bij elke klokcyclus met 4 stijgen. Indien er echter een branch of een jump genomen wordt zal de multiplexer dit branch adres doorgeven aan het instructiegeheugen. Het controlesignaal bestaat uit het comparison signaal van de *branch comparison unit* samen met `branch_inst` of `jump_inst`.
 
+![IF](./res/IF.png)
+
 ### Instruction decode (ID)
 
 In deze fase wordt de instructie omgezet naar controle signalen om op die manier de rest van de core correct aan te sturen.
+
+![IF](./res/ID.png)
 
 #### Control
 De belangrijkste module uit de instruction decode fase is de `CONTROL` module. `CONTROL` neemt de volledige instructie en "decodeert" deze om vervolgens controle signalen te genereren die de *dataflow* beïnvloeden. De module heeft naast instructie ook nog een `stall` input, die zorgt er simpelweg voor dat alle outputs `'b0` worden waneer de core *must stall*. Hieronder staan kort de io's van deze module uitgelegd.
@@ -92,9 +96,13 @@ In deze fase worden de bewerkingen van de processor uitgevoerd. Deze gebeuren in
 Het controlesignaal dat toekomt zal bepalen welke berekening/instructie er zal uitgevoerd worden op de twee data ingangen. Het resultaat wordt dan vrijgegeven aan de uitgang.
 Voor beide data ingangen van de ALU staat nog een multiplexer om te bepalen welke data er binnenkomt aan de ALU. Aan de ene ingang wordt er een keuze gemaakt tussen de volgende PC waarde en data die afkomstig is van de ID fase. Aan de andere ingang is het een keuze tussen data uit de ID fase en een getal van de immediate_generator. Deze twee multiplexers worden aangestuurd door de controle unit.
 
+![IF](./res/EX.png)
+
 ### Memory access (MEM)
 
 In deze fase wordt er data geschreven of gelezen in het datageheugen of de memory mapped inputs/outputs (IO's). Aangezien het ram geheugen dat gebruikt wordt in het data geheugen al registers bevat worden de signalen rechtstreeks vanuit de EX fase aangesloten. Voor de IO's worden er dan interne registers toegevoegd in de data memory module. De ingangen aan deze module bevatten data en signalen zoals het adres voor het geheugen, data die weggeschreven dient te worden en een aantal controlesignalen. 
+
+![IF](./res/MEM.png)
 
 ### Write back (WB)
 
