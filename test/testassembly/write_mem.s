@@ -1,6 +1,6 @@
 li t0, 0x0
 li t1, 0x200
-li t2, 0x800    # IO base address
+li s2, 0x2000    # IO base address
 loop:
     sw t0, 0(t0)
     sw t0, 0(t2)
