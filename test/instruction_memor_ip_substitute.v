@@ -1,7 +1,8 @@
 // This module is for simulating only, for synthesizing a RAM Quartus IP block is used.
 module instruction_memory (
+    aclr,           // input -> async clear
 	address,        // input -> address to read/write
-    	addressstall_a, // input -> high stalls address input register
+    addressstall_a, // input -> high stalls address input register
 	clock,          // input -> clock
 	data,           // input -> input data
 	wren,           // input -> high enables write
@@ -10,6 +11,7 @@ module instruction_memory (
 
 // -- Module IO -----------------------------------------------
 // Io matches that of RAM IP block and thus should not be altered!
+input aclr;
 input [8:0] address;
 input addressstall_a;
 input clock;
@@ -36,7 +38,7 @@ assign q = mem[address_reg];
 
 // -- Initialize memory ---------------------------------------
 initial begin
-        $readmemh ("memmodes.hex", mem);
+        $readmemh ("../repo/test/testmem/instruction_memory.mem", mem);
     end
 
 endmodule

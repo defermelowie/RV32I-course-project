@@ -46,7 +46,7 @@ always @(*) begin
 	if (wren)
 		case (mem_mode)
 			MEM_BYTE: byte_enable <= ('b0001 << address[1:0]);
-			MEM_HALF: byte_enable <= ('b0011 << address[1:0]);	// TODO "Problem" if address[1:0] == 3
+			MEM_HALF: byte_enable <= ('b0011 << address[1:0]); // "Problem" if address[1:0] == 3
 			MEM_WORD: byte_enable <= 'b1111;
 			default: byte_enable <= 'b1111; // Write full words as default
 		endcase
@@ -56,14 +56,15 @@ end
 // -- Select memory block (for writing) -----------------------
 reg ram_sel, io_in_sel;	// Block select signals
 always @(*) begin
-	ram_sel <= 0;
-	io_in_sel <= 0;
-	if (address[13:12] == 'b00) begin
+	
+	if (address[13:12] == 'b00)
 		ram_sel <= 1;
-	end
-	if (address_register[13:12] == 'b10) begin
+	else
+		ram_sel <= 0;
+	if (address_register[13:12] == 'b10)
 		io_in_sel <= 1;
-	end
+	else 
+		io_in_sel <= 0;
 end
 
 // -- Select output source ------------------------------------
@@ -71,13 +72,13 @@ reg [31:0] unmasked_q;
 always @(*) begin
 	case (address_register[13:12])
 		'b00: begin	// Select ram block
-			unmasked_q <= mem_out >> (address_register[1:0]*8); // TODO "Problem" if address[1:0] == 3 and mode == MEM_HALF
+			unmasked_q <= mem_out >> (address_register[1:0]*8); // "Problem" if address[1:0] == 3 and mode == MEM_HALF
 		end
 		'b01: begin	// Select block for reading from io
-			unmasked_q <= io_out >> (address_register[1:0]*8); // TODO "Problem" if address[1:0] == 3 and mode == MEM_HALF
+			unmasked_q <= io_out >> (address_register[1:0]*8); // "Problem" if address[1:0] == 3 and mode == MEM_HALF
 		end
 		'b10: begin	// Select block for writing to io
-			unmasked_q <= io_in >> (address_register[1:0]*8); // TODO "Problem" if address[1:0] == 3 and mode == MEM_HALF
+			unmasked_q <= io_in >> (address_register[1:0]*8); // "Problem" if address[1:0] == 3 and mode == MEM_HALF
 		end
 		default: unmasked_q <= 0;
 	endcase
@@ -91,6 +92,7 @@ end
 
 // -- Memory block --------------------------------------------
 data_memory_ip_block DATA_MEMORY_IP_BLOCK(
+	.aclr(reset),
 	.address(address[11:2]),        // has input register !
     .byteena(byte_enable),          // has input register !
 	.clock(clock),                  // has input register !
