@@ -31,15 +31,15 @@ reg [31:0] io_in;
 
 // -- registers for address and data
 wire [31:0] address_register;
-register #(32) address_register_data_memory (.in(address), .write_enable(1'b1), .out(address_register), .clock(clock), .reset(1'b0));
+register #(32) address_register_data_memory (.in(address), .write_enable(1'b1), .out(address_register), .clock(clock), .reset(reset));
 wire [31:0] data_register;
-register #(32) data_register_data_memory (.in(data), .write_enable(1'b1), .out(data_register), .clock(clock), .reset(1'b0));
+register #(32) data_register_data_memory (.in(data), .write_enable(1'b1), .out(data_register), .clock(clock), .reset(reset));
 wire wren_register;
-register #(1) wren_register_data_memory (.in(wren), .write_enable(1'b1), .out(wren_register), .clock(clock), .reset(1'b0));
+register #(1) wren_register_data_memory (.in(wren), .write_enable(1'b1), .out(wren_register), .clock(clock), .reset(reset));
 wire [3:0] byte_enable_reg;
-register #(4) byte_enable_reg_data_memory (.in(byte_enable), .write_enable(1'b1), .out(byte_enable_reg), .clock(clock), .reset(1'b0));
+register #(4) byte_enable_reg_data_memory (.in(byte_enable), .write_enable(1'b1), .out(byte_enable_reg), .clock(clock), .reset(reset));
 wire [1:0] mem_mode_reg;
-register #(2) mem_mode_reg_data_memory (.in(mem_mode), .write_enable(1'b1), .out(mem_mode_reg), .clock(clock), .reset(1'b0));
+register #(2) mem_mode_reg_data_memory (.in(mem_mode), .write_enable(1'b1), .out(mem_mode_reg), .clock(clock), .reset(reset));
 
 // -- Set byte enable according to mode & address -------------
 always @(*) begin
@@ -91,6 +91,7 @@ end
 
 // -- Memory block --------------------------------------------
 data_memory_ip_block DATA_MEMORY_IP_BLOCK(
+	.aclr(reset),
 	.address(address[11:2]),        // has input register !
     .byteena(byte_enable),          // has input register !
 	.clock(clock),                  // has input register !
