@@ -16,74 +16,6 @@ In deze fase wordt er aan de hand van de program counter (PC) een instructie opg
 
 ### Instruction decode (ID)
 
-#### Control
-De belangrijkste module uit de instruction decode fase is de `CONTROL` module. `CONTROL` neemt de volledige instructie en "decodeert" deze om vervolgens controle signalen te genereren die de *dataflow* beïnvloeden. De module heeft naast instructie ook nog een `stall` input, die zorgt er simpelweg voor dat alle outputs `'b0` worden waneer de core *must stall*. Hieronder staan kort de io's van deze module uitgelegd.
-
-```verilog
-module control (
-    instruction,        // input -> full instruction
-    stall,              // input -> high if processor must stall
-    branch_enable,      // output -> high for branch instructions
-    branch_mode,        // output -> branch comparison mode (definitions in comparison_codes.h))
-    mem_write_enable,   // output -> high enables write to data memory
-    mem_unsigned,       // output -> high when unsigned load
-    mem_mode,           // output -> specifies memory mode i.e. byte/halfword/word
-    reg_write_enable,   // output -> high enables write to registerfile
-    mem_to_reg,         // output -> high routes data memory output to register input
-    alu_op,             // output -> ALU operating mode (definitions in alu_codes.h)
-    alu_src,            // output -> high: alu input = immediate, low: alu input = register file
-    pc_to_reg,          // output -> high: writes pc + 4 to destination reg
-    jump_enable,        // output -> high for jump instructions
-    jump_reg,           // output -> high: set pc to reg content
-    ill_instr           // output -> high if instruction is not recognized
-);
-```
-
-#### Register file
-
-De `REGISTER_FILE` bestaat bij een RV32I uit 32 registers en heeft twee *address* inputs zodat er twee waarden gelijktijdig uitgelezen kunnen worden. Verder heeft de register file een *address* en een *data* ingang om nieuwe dat weg te schijven. Dit gebeurt enkel wanneer de `write_enable` ingang hoog is.
-
-```verilog
-module register_file (
-    read_reg_0,     // input -> address of reg to read
-    read_reg_1,     // input -> address of reg to read
-    write_reg,      // input -> address of reg to write
-    write_data,     // input -> data to write
-    write_enable,   // input -> high enables write
-    read_data_0,    // output -> data at address "read_reg_0"
-    read_data_1,    // output -> data at address "read_reg_1"
-    clock,          // input -> clock
-    reset           // input -> resets all registers
-);
-```
-
-#### Immediate generator 
-
-De taak van de `IMMEDIATE_GENERATOR` is het genereren van getallen op basis van de instructie, onderstaande figuur geeft de manier weer waarop deze getallen zijn opgebouwd voor de verschillende types van instructies.
-
-![Immediate format](./res/immediate_format.PNG)
-
-*Source: https://riscv.org/wp-content/uploads/2017/05/riscv-spec-v2.2.pdf Figure 2.4*
-
-#### Branch comparison unit
-
-Door de `BRANCH_COMPARISON_UNIT` in de instruction decode fase te steken, moet de processor slechts één klokcyclus wachten in plaats van twee wanneer een branch genomen wordt. Deze module vergelijkt `ID_data_0` & `ID_data_1` op basis van een *comparison mode*. Deze modi zijn gedefinieerd in `"comparison_codes.h"`. Wanneer de data inputs aan de voorwaarde van de gespecificeerde modus voldoen wordt `ID_branch_comp` hoog.
-
-Hieronder staan nog even de io's van deze module vermeld:
-
-```verilog
-module branch_comparison_unit (
-    in_0,    // input -> first register file output
-    in_1,    // input -> second register file output
-    mode,   // input -> comparison mode
-    branch  // output -> high if comparison is true
-);
-```
-
-#### Forwarding unit
-
-Deze module zit niet volledig in de `ID` fase maar stuurt er wel een groot deel logica aan waardoor ze hier besproken word. De `FORWARDING_UNIT` zal controleren of het resultaat van een nog niet volledig afgewerkte instructie al nodig is een een volgende instructie. Indien mogelijk zal de *forwarding unit* er dan voor zorgen dat het resultaat tegen de normale *data flow* in *gefoward* wordt door *mux* in het midden van tekening aan te sturen.
-
 ### Execution (EX)
 
 In deze fase worden de bewerkingen van de processor uitgevoerd. Deze gebeuren in de ALU (Aritmetic Logic Unit). Deze heeft drie ingangen en een uitgang. 
@@ -91,6 +23,8 @@ Het controlesignaal dat toekomt zal bepalen welke berekening/instructie er zal u
 Voor beide data ingangen van de ALU staat nog een multiplexer om te bepalen welke data er binnenkomt aan de ALU. Aan de ene ingang wordt er een keuze gemaakt tussen de volgende PC waarde en data die afkomstig is van de ID fase. Aan de andere ingang is het een keuze tussen data uit de ID fase en een getal van de immediate_generator. Deze twee multiplexers worden aangestuurd door de controle unit.
 
 ### Memory access (MEM)
+
+In deze fase wordt er data geschreven of gelezen in het datageheugen of de memory mapped inputs/outputs (IO's). Aangezien het ram geheugen dat gebruikt wordt in het data geheugen al registers bevat worden de signalen rechtstreeks vanuit de EX fase aangesloten. Voor de IO's worden er dan interne registers toegevoegd in de data memory module. De ingangen aan deze module bevatten data en signalen zoals het adres voor het geheugen, data die weggeschreven dient te worden en een aantal controlesignalen. 
 
 ### Write back (WB)
 
