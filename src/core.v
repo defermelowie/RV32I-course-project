@@ -247,7 +247,8 @@ data_memory DATA_MEMORY(
     .wren(EX_mem_write_enable),  // EX instead of MEM since memory has input registers
 	.q(MEM_mem_data_out),
     .io_input_bus(io_input_bus),
-    .io_output_bus(io_output_bus)
+    .io_output_bus(io_output_bus),
+    .reset(reset)
 );
 
 
